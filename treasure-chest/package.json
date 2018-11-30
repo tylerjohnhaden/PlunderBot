@@ -1,0 +1,15 @@
+{
+  "name": "treasure-chest",
+  "version": "0.0.1",
+  "description": "A treasure chest to store the booty",
+  "main": "truffle.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tylerjohnhaden/PlunderBot"
+  },
+  "author": "Tyler John Haden",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "truffle-hdwallet-provider": "0.0.6"
+  }
+}
