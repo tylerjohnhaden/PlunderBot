@@ -1,3 +1,5 @@
+// reference: https://truffleframework.com/docs/truffle/reference/configuration
+
 var HDWalletProvider = require("truffle-hdwallet-provider");
 
 var infura_kovan_endpoint = "https://kovan.infura.io/v3/036a25e03d7b4dabbfef8b00ac39e956";
@@ -11,7 +13,8 @@ module.exports = {
       network_id: "25624",
       gas: 6500000,
       gasPrice: 25000000000,
-      gasLimit: 6500000
+      gasLimit: 6500000,
+      from: "0x341ce5f1b95a4b96c3c6527285e810d2056ffeab"
     },
     kovan: {
       provider: () =>
