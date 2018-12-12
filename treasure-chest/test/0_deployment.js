@@ -15,7 +15,6 @@ contract('TreasureChest', (accounts) => {
         treasureChest = await TreasureChest.deployed();
     });
 
-
     it('has a validated contract size', async () => {
         // bytecode is in hexadecimal, where each byte is represented by two characters: 0x00 -> 0xff
         let bytecodeSize = treasureChest.constructor._json.bytecode.length / 2;

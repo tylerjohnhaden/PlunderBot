@@ -4,9 +4,15 @@ require('truffle-test-utils').init();
 
 const TreasureChest = artifacts.require('TreasureChest');
 
+function vmException(reason) {
+    return 'VM Exception while processing transaction: revert ' + reason;
+}
+
 contract('TreasureChest', (accounts) => {
 
     let creator = accounts[0];
+    let secondAccount = accounts[1];
+    let thirdAccount = accounts[2];
     let treasureChest;
 
     // build up and tear down a new TreasureChest before each test
@@ -16,12 +22,49 @@ contract('TreasureChest', (accounts) => {
 
 
     it('has creator as a crew member by default', async () => {
-        let thing = await treasureChest.crew(creator, { from: creator })
-        assert(thing === true, 'The creator of the contract is not a crew member!');
+        let creatorIsCrewMember = await treasureChest.crew(creator, { from: creator });
+        assert(creatorIsCrewMember === true, 'The creator of the contract is not a crew member!');
     });
 
-    // TODO: try to test creating the contract with address = 0x0
+    // TODO: try to test creating the contract with address = 0x0 ?
 
+    it('can add a crew member from another crew member', async () => {
+        let secondAccountIsCrewMemberBefore = await treasureChest.crew(secondAccount, { from: creator });
 
+        await treasureChest.addCrewMember(secondAccount, { from: creator });
+
+        let secondAccountIsCrewMemberAfter = await treasureChest.crew(secondAccount, { from: creator });
+
+        assert(secondAccountIsCrewMemberBefore === false, 'A non-creator address was crew by default!');
+        assert(secondAccountIsCrewMemberAfter === true, 'An attempt to add another crew member failed!');
+    });
+
+    it('cannot add a crew member with the address 0x0', async () => {
+        try {
+            await treasureChest.addCrewMember('0x0', { from: creator });
+
+        } catch(err) {
+            assert(err.message === vmException('Crewed.addCrewMember'),
+                'Adding 0x0 to the crew threw the wrong revert message!');
+
+            return;
+        }
+
+        assert(false, 'Adding 0x0 to the crew did not revert!');
+    });
+
+    it('cannot add a crew member from a non crew member', async () => {
+        try {
+            await treasureChest.addCrewMember(secondAccount, { from: thirdAccount });
+
+        } catch(err) {
+            assert(err.message === vmException('Crewed.onlyCrew'),
+                'Adding crew from a non crew member threw the wrong revert message!');
+
+            return;
+        }
+
+        assert(false, 'Adding crew from a non crew member did not revert!');
+    });
 
 });
