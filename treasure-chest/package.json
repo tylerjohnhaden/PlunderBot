@@ -21,6 +21,7 @@
     "concurrently": "^4.0.1",
     "ganache-cli": "^6.1.8",
     "truffle": "^4.1.14",
-    "truffle-hdwallet-provider": "0.0.6"
+    "truffle-hdwallet-provider": "0.0.6",
+    "truffle-test-utils": "^0.1.0"
   }
 }

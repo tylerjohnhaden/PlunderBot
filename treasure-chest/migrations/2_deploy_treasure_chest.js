@@ -1,5 +1,5 @@
-var treasureChest = artifacts.require("TreasureChest");
+var TreasureChest = artifacts.require("TreasureChest");
 
 module.exports = function(deployer) {
-    deployer.deploy(treasureChest);
+    deployer.deploy(TreasureChest);
 };
