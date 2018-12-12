@@ -17,7 +17,11 @@ A robot that steals doubly fake internet money
 
 
 https://gitter.im/kovan-testnet/faucet
+https://github.com/trufflesuite/ganache-cli
 
-ganache-cli --networkId 25624 --allowUnlimitedContractSize --gasLimit 6500000 -m "pirates may plunder gold but i plunder doubly fake internet gold arrrrrr" -f "https://kovan.infura.io/v3/036a25e03d7b4dabbfef8b00ac39e956@9125810"
+export MNEMONIC="pirates may plunder gold but ye plunder doubly fake internet gold arrrrrr"
+export INFURA_KOVAN_ENDPOINT="https://kovan.infura.io/v3/036a25e03d7b4dabbfef8b00ac39e956"
+
+ganache-cli --networkId 25624 --allowUnlimitedContractSize --gasLimit 6500000 -m $MNEMONIC -f $INFURA_KOVAN_ENDPOINT
 rm -rf build && truffle migrate --reset --all --clean --network development
 

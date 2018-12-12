@@ -1,4 +1,4 @@
-pragma solidity ^0.5.1;
+pragma solidity ^0.4.24;
 
 // Solidity 0.5.1 reference documentation --- https://solidity.readthedocs.io/en/v0.5.1/
 
@@ -32,7 +32,7 @@ contract Crewed {
 
     constructor() public {
         // We don't allow 0x0 to be a crew member, or contract creator.
-        require(msg.sender, "Crewed.constructor");
+        require(msg.sender != 0x0, "Crewed.constructor");
 
         // Set the contract's creator as a crew member, we need at least one
         crew[msg.sender] = true;
@@ -63,7 +63,7 @@ contract Crewed {
 
     function addCrewMember(address crewMember) public onlyCrew {
         // We don't allow 0x0 to be a crew member.
-        require(crewMember, "Crewed.addCrewMember");
+        require(crewMember != 0x0, "Crewed.addCrewMember");
 
         // Set to true to be welcomed into the crew
         crew[crewMember] = true;
@@ -102,12 +102,12 @@ contract TreasureChest is Crewed {
 
     function addDrain(address drainAddress, uint256 _min, uint256 _max) public onlyCrew {
         // We wont allow 0x0 to be a drain address
-        require(drainAddress, "TreasureChest.addDrain.0");
+        require(drainAddress != 0x0, "TreasureChest.addDrain.0");
         // We wont allow an 'active' drain to be added again. It will overwrite the
         // existing struct, but drain pointers will become littered.
         require(drains[drainAddress].max == 0, "TreasureChest.addDrain.1");
         // If a drain's max is 0, we'll never end up doing anything, so ignore it
-        require(_max, "TreasureChest.addDrain.2");
+        require(_max != 0, "TreasureChest.addDrain.2");
         // If a drain's min is greater than its max, our math will screw up
         require(_min <= _max, "TreasureChest.addDrain.3");
 
@@ -121,7 +121,7 @@ contract TreasureChest is Crewed {
 
     function updateDrainMin(address drainAddress, uint256 _min) public onlyCrew {
         // We never allow an 'active' drain to have max == 0, and can use that as proof it is one
-        require(drains[drainAddress].max, "TreasureChest.updateDrainMin.0");
+        require(drains[drainAddress].max != 0, "TreasureChest.updateDrainMin.0");
         // If a drain's min is greater than its max, our math will screw up
         require(_min <= drains[drainAddress].max, "TreasureChest.updateDrainMin.1");
 
@@ -131,9 +131,9 @@ contract TreasureChest is Crewed {
 
     function updateDrainMax(address drainAddress, uint256 _max) public onlyCrew {
         // We never allow an 'active' drain to have max == 0, and can use that as proof it is one
-        require(drains[drainAddress].max, "TreasureChest.updateDrainMax.0");
+        require(drains[drainAddress].max != 0, "TreasureChest.updateDrainMax.0");
         // If a drain's max is 0, we'll never end up doing anything, so ignore it
-        require(_max, "TreasureChest.updateDrainMax.1");
+        require(_max != 0, "TreasureChest.updateDrainMax.1");
         // If a drain's min is greater than its max, our math will screw up
         require(drains[drainAddress].min <= _max, "TreasureChest.updateDrainMax.2");
 
@@ -149,7 +149,7 @@ contract TreasureChest is Crewed {
      */
     function removeDrain(address drainAddress) public onlyCrew {
         // We never allow an 'active' drain to have max == 0, and can use that as proof it is one
-        require(drains[drainAddress].max, "TreasureChest.removeDrain");
+        require(drains[drainAddress].max != 0, "TreasureChest.removeDrain");
 
         // Since we don't allow drain addresses to be 0x0, we can nullify the
         // drain pointer. We rely on the number of drains to be relatively

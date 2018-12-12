@@ -2,8 +2,8 @@
 
 var HDWalletProvider = require("truffle-hdwallet-provider");
 
-var infura_kovan_endpoint = "https://kovan.infura.io/v3/036a25e03d7b4dabbfef8b00ac39e956";
-var mnemonic = "pirates may plunder gold but i plunder doubly fake internet gold arrrrrr";
+var infura_kovan_endpoint = process.env.INFURA_KOVAN_ENDPOINT;
+var mnemonic = process.env.MNEMONIC;
 
 module.exports = {
   networks: {
@@ -14,7 +14,7 @@ module.exports = {
       gas: 6500000,
       gasPrice: 25000000000,
       gasLimit: 6500000,
-      from: "0x341ce5f1b95a4b96c3c6527285e810d2056ffeab"
+      from: "0x8be4dd4aad3ea168c26a5df0accf511d359ef50e"  // TODO: use (new HDWalletProvider(mnemonic, infura_kovan_endpoint)).getAddress(0);  // buggy though
     },
     kovan: {
       provider: () =>

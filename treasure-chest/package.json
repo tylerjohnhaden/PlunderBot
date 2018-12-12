@@ -3,6 +3,14 @@
   "version": "0.0.1",
   "description": "A treasure chest to store the booty",
   "main": "truffle.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "start": "concurrently \"npm run start-ganache\" \"npm run deploy-contracts\"",
+    "start-ganache": "ganache-cli --networkId 25624 --allowUnlimitedContractSize --gasLimit 6500000 -m $MNEMONIC -f $INFURA_KOVAN_ENDPOINT",
+    "deploy-contracts": "rm -rf build && truffle migrate --reset --all --clean --network development"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/tylerjohnhaden/PlunderBot"
@@ -10,6 +18,9 @@
   "author": "Tyler John Haden",
   "license": "Apache-2.0",
   "dependencies": {
+    "concurrently": "^4.0.1",
+    "ganache-cli": "^6.1.8",
+    "truffle": "^4.1.14",
     "truffle-hdwallet-provider": "0.0.6"
   }
 }
