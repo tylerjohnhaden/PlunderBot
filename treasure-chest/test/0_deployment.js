@@ -10,24 +10,24 @@ contract('TreasureChest', (accounts) => {
 
     let treasureChest;
 
-    // build up and tear down a new AfloatContract before each test
+    // build up and tear down a new TreasureChest before each test
     beforeEach(async () => {
         treasureChest = await TreasureChest.deployed();
     });
 
 
-    it("should validate contract size", async () => {
+    it('has a validated contract size', async () => {
         // bytecode is in hexadecimal, where each byte is represented by two characters: 0x00 -> 0xff
         let bytecodeSize = treasureChest.constructor._json.bytecode.length / 2;
         let deployedBytecodeSize = treasureChest.constructor._json.deployedBytecode.length / 2;
 
-        console.info("TreasureChest deployed at address: " + web3.toChecksumAddress(treasureChest.address))
-        console.info(" -- size of bytecode in bytes = ", bytecodeSize);
-        console.info(" -- size of deployed in bytes = ", deployedBytecodeSize);
-        console.info(" -- initialisation and constructor code in bytes = ", bytecodeSize - deployedBytecodeSize);
+        console.info('TreasureChest deployed at address: ' + web3.toChecksumAddress(treasureChest.address))
+        console.info(' -- size of bytecode in bytes = ', bytecodeSize);
+        console.info(' -- size of deployed in bytes = ', deployedBytecodeSize);
+        console.info(' -- initialisation and constructor code in bytes = ', bytecodeSize - deployedBytecodeSize);
 
         // Make assertion on deployed since the initial transaction takes constructor bytecode into account
-        assert(deployedBytecodeSize <= MAX_DEPLOYED_BYTECODE_SIZE, "Contract bytecode is too big to deploy!");
+        assert(deployedBytecodeSize <= MAX_DEPLOYED_BYTECODE_SIZE, 'Contract bytecode is too big to deploy!');
     });
 
 });

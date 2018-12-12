@@ -1,16 +1,10 @@
 pragma solidity ^0.4.24;
 
-// TODO: split up contracts so people can see importing
-
 // Solidity 0.5.1 reference documentation --- https://solidity.readthedocs.io/en/v0.5.1/
 
-/**# A YAML specification for all the explicit revert messages in Crewed and TreasureChest
+/**# A YAML specification for all the explicit revert messages in TreasureChest
 
 Revert:
-    Crewed:
-        constructor: "We don't allow 0x0 to be a crew member, or contract creator"
-        onlyCrew: "You must be in the crew to call this"
-        addCrewMember: "We don't allow 0x0 to be a crew member"
     TreasureChest:
         addDrain:
             0: "We don't allow 0x0 to be a drain address"
@@ -27,56 +21,7 @@ Revert:
         removeDrain: "You can't remove a 'non active' drain"
 */
 
-contract Crewed {
-
-    /// crew: bit mapping for authorized operator addresses for this contract
-    mapping(address => bool) public crew;
-
-    constructor() public {
-        // We don't allow 0x0 to be a crew member, or contract creator.
-        require(msg.sender != 0x0, "Crewed.constructor");
-
-        // Set the contract's creator as a crew member, we need at least one
-        crew[msg.sender] = true;
-    }
-
-    // This contract will be used to send in money from Kovan test faucets.
-    // These faucets simply transfer (Kovan) ETH as if this was a user's address.
-    function () public payable {}
-
-    /**
-     *    If the crew mapping returns false, make them walk the plank.
-     *
-     *    In the line below, msg.sender is the address that called the
-     *    original function.
-     *
-     *       "The values of all members of msg, including
-     *        msg.sender and msg.value can change for every
-     *        external function call. This includes calls to
-     *        library functions."
-     *
-     *   https://solidity.readthedocs.io/en/v0.5.1/units-and-global-variables.html#special-variables-and-functions
-     */
-    modifier onlyCrew() {
-        // You must be in the crew to call this.
-        require(crew[msg.sender], "Crewed.onlyCrew");
-        _;
-    }
-
-    function addCrewMember(address crewMember) public onlyCrew {
-        // We don't allow 0x0 to be a crew member.
-        require(crewMember != 0x0, "Crewed.addCrewMember");
-
-        // Set to true to be welcomed into the crew
-        crew[crewMember] = true;
-    }
-
-    function removeCrewMember(address crewMember) public onlyCrew {
-        // Doesn't matter if crewMember is already false, just set anyway
-        // If you're spending money on removing non crew members, oh well
-        crew[crewMember] = false;
-    }
-}
+import "./Crewed.sol";
 
 contract TreasureChest is Crewed {
 
@@ -101,6 +46,10 @@ contract TreasureChest is Crewed {
     uint256 public drainPointerHead;
 
     /// The constructor is default and can be omitted
+
+    // This contract will be used to send in money from Kovan test faucets.
+    // These faucets simply transfer (Kovan) ETH as if this was a user's address.
+    function () public payable {}
 
     function addDrain(address drainAddress, uint256 _min, uint256 _max) public onlyCrew {
         // We wont allow 0x0 to be a drain address
