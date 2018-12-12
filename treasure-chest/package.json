@@ -7,9 +7,10 @@
     "test": "test"
   },
   "scripts": {
-    "start": "concurrently \"npm run start-ganache\" \"npm run deploy-contracts\"",
-    "start-ganache": "ganache-cli --networkId 25624 --allowUnlimitedContractSize --gasLimit 6500000 -m $MNEMONIC -f $INFURA_KOVAN_ENDPOINT",
-    "deploy-contracts": "rm -rf build && truffle migrate --reset --all --clean --network development"
+    "start": "concurrently \"npm run ganache-start\" \"npm run truffle-migrate\"",
+    "test": "concurrently \"npm run ganache-start\" \"npm run truffle-migrate && truffle test\" --kill-others --success first",
+    "ganache-start": "ganache-cli --networkId 25624 --allowUnlimitedContractSize --gasLimit 6500000 -m $MNEMONIC -f $INFURA_KOVAN_ENDPOINT",
+    "truffle-migrate": "rm -rf build && truffle migrate --reset --all --clean --network development"
   },
   "repository": {
     "type": "git",

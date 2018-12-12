@@ -1,5 +1,7 @@
 pragma solidity ^0.4.24;
 
+// TODO: split up contracts so people can see importing
+
 // Solidity 0.5.1 reference documentation --- https://solidity.readthedocs.io/en/v0.5.1/
 
 /**# A YAML specification for all the explicit revert messages in Crewed and TreasureChest
