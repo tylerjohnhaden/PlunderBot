@@ -4,7 +4,7 @@ import os
 from gitterpy.client import GitterClient
 
 
-def lambda_handler(event, context):
+def gitter_handler(event, context):
     token = os.environ['GITTER_API_TOKEN']
     room = os.environ['GITTER_FAUCET_ROOM']
     address = os.environ['KOVAN_ADDRESS']
