@@ -41,13 +41,9 @@ contract('TreasureChest', (accounts) => {
 
     it('cannot add a crew member with the address 0x0', async () => {
         try {
-            console.info(await treasureChest.crew(creator, { from: creator }));
-            console.info(await treasureChest.crew('0xb0c89d94ed0a571c9a89d835524afd83875f5441', { from: '0xb0c89d94ed0a571c9a89d835524afd83875f5441' }));
-            console.info(accounts);
             await treasureChest.addCrewMember('0x0', { from: creator });
 
         } catch(err) {
-            console.log(err.message);
             assert(err.message === vmException('Crewed.addCrewMember'),
                 'Adding 0x0 to the crew threw the wrong revert message!');
 
@@ -62,7 +58,6 @@ contract('TreasureChest', (accounts) => {
             await treasureChest.addCrewMember(secondAccount, { from: thirdAccount });
 
         } catch(err) {
-            console.log(err.message);
             assert(err.message === vmException('Crewed.onlyCrew'),
                 'Adding crew from a non crew member threw the wrong revert message!');
 
