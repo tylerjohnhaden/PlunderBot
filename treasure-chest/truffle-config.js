@@ -14,7 +14,7 @@ module.exports = {
       gas: 6500000,
       gasPrice: 25000000000,
       gasLimit: 6500000,
-      from: '0x8be4dd4aad3ea168c26a5df0accf511d359ef50e'
+      from: '0xb0c89d94ed0a571c9a89d835524afd83875f5441'
       // TODO: use (new HDWalletProvider(mnemonic, infura_kovan_endpoint)).getAddress(0);  // buggy though
     },
     kovan: {
