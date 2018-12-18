@@ -9,7 +9,7 @@
   "scripts": {
     "start": "concurrently \"npm run ganache-start\" \"npm run truffle-migrate\"",
     "test": "concurrently \"npm run ganache-start\" \"npm run truffle-migrate && truffle test\" --kill-others --success first",
-    "ganache-start": "ganache-cli --networkId 25624 --allowUnlimitedContractSize --gasLimit 6500000 -m \"$MNEMONIC\" -f $INFURA_KOVAN_ENDPOINT",
+    "ganache-start": "ganache-cli --networkId $npm_package_config_ganache_networkId --allowUnlimitedContractSize --gasLimit $npm_package_config_ganache_gasLimit --mnemonic \"$MNEMONIC\" --fork $INFURA_KOVAN_ENDPOINT",
     "truffle-migrate": "rm -rf build && truffle migrate --reset --all --clean --network development"
   },
   "repository": {
@@ -24,5 +24,12 @@
     "truffle": "^4.1.14",
     "truffle-hdwallet-provider": "0.0.6",
     "truffle-test-utils": "^0.1.0"
+  },
+  "config": {
+    "ganache": {
+      "networkId": 3431,
+      "gasPrice": 25000000000,
+      "gasLimit": 6500000
+    }
   }
 }
