@@ -1,4 +1,4 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.0;
 
 /**# A YAML specification for all the explicit revert messages in Crewed
 
@@ -11,12 +11,15 @@ Revert:
 
 contract Crewed {
 
+    event Crewed_CrewAdded(address crewMember, address operator);
+    event Crewed_CrewRemoved(address crewMember, address operator);
+
     /// crew: bit mapping for authorized operator addresses for this contract
     mapping(address => bool) public crew;
 
     constructor() public {
         // We don't allow 0x0 to be a crew member, or contract creator.
-        require(msg.sender != 0x0, "Crewed.constructor");
+        require(msg.sender != address(0x0), "Crewed.constructor");
 
         // Set the contract's creator as a crew member, we need at least one
         crew[msg.sender] = true;
@@ -43,7 +46,7 @@ contract Crewed {
 
     function addCrewMember(address crewMember) public onlyCrew {
         // We don't allow 0x0 to be a crew member.
-        require(crewMember != 0x0, "Crewed.addCrewMember");
+        require(crewMember != address(0x0), "Crewed.addCrewMember");
 
         // Set to true to be welcomed into the crew
         crew[crewMember] = true;

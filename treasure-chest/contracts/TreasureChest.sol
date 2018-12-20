@@ -1,4 +1,4 @@
-pragma solidity ^0.4.24;
+pragma solidity ^0.5.0;
 
 // Solidity 0.5.1 reference documentation --- https://solidity.readthedocs.io/en/v0.5.1/
 
@@ -25,6 +25,17 @@ import "./Crewed.sol";
 
 contract TreasureChest is Crewed {
 
+    //
+    event TreasureChest_Created(address creator);
+    event TreasureChest_PaymentReceived(address indexed payerAddress, uint256 amount, uint256 currentBalance);
+
+    event TreasureChest_DrainAdded(address indexed drainAddress, uint256 min, uint256 max);
+    event TreasureChest_DrainUpdated(address indexed drainAddress, uint256 min, uint256 max);
+    event TreasureChest_DrainRemoved(address indexed drainAddress);
+
+    event TreasureChest_PaymentSent(address indexed drainAddress, uint256 amount, uint256 currentBalance);
+
+
     /**
      *    Drain will be created 'once' per address. Technically, if a drain is added,
      *    removed, then added again, a new Drain will be 'created' but in the exact same
@@ -45,51 +56,67 @@ contract TreasureChest is Crewed {
     mapping(uint256 => address) public drainPointers;
     uint256 public drainPointerHead;
 
-    /// The constructor is default and can be omitted
+    /// The constructor could be omitted, but we are logging it
+    constructor() public {
+        emit TreasureChest_Created(msg.sender);
+    }
 
     // This contract will be used to send in money from Kovan test faucets.
     // These faucets simply transfer (Kovan) ETH as if this was a user's address.
-    function () public payable {}
+    function () external payable {
+        emit TreasureChest_PaymentReceived(msg.sender, msg.value, address(this).balance);
+    }
 
     function addDrain(address drainAddress, uint256 _min, uint256 _max) public onlyCrew {
         // We wont allow 0x0 to be a drain address
-        require(drainAddress != 0x0, "TreasureChest.addDrain.0");
+        require(drainAddress != address(0x0), "TreasureChest.addDrain.0");
         // We wont allow an 'active' drain to be added again. It will overwrite the
         // existing struct, but drain pointers will become littered.
-        require(drains[drainAddress].max == 0, "TreasureChest.addDrain.1");
+        require(drains[drainAddress].max == 0 wei, "TreasureChest.addDrain.1");
         // If a drain's max is 0, we'll never end up doing anything, so ignore it
-        require(_max != 0, "TreasureChest.addDrain.2");
+        require(_max != 0 wei, "TreasureChest.addDrain.2");
         // If a drain's min is greater than its max, our math will screw up
         require(_min <= _max, "TreasureChest.addDrain.3");
 
+
         // Add the new drainAddress to the head of the drain pointer 'list'
         drainPointers[drainPointerHead] = drainAddress;
+
         // Record the current index, min, and max
         drains[drainAddress] = Drain(drainPointerHead, _min, _max);
+
         // Increment the pointer head for the next added drain
         drainPointerHead += 1;
+
+        emit TreasureChest_DrainAdded(drainAddress, _min, _max);
     }
 
     function updateDrainMin(address drainAddress, uint256 _min) public onlyCrew {
         // We never allow an 'active' drain to have max == 0, and can use that as proof it is one
-        require(drains[drainAddress].max != 0, "TreasureChest.updateDrainMin.0");
+        require(drains[drainAddress].max != 0 wei, "TreasureChest.updateDrainMin.0");
         // If a drain's min is greater than its max, our math will screw up
         require(_min <= drains[drainAddress].max, "TreasureChest.updateDrainMin.1");
 
+
         // Update min
         drains[drainAddress].min = _min;
+
+        emit TreasureChest_DrainUpdated(drainAddress, _min, drains[drainAddress].max);
     }
 
-    function updateDrainMax(address drainAddress, uint256 _max) public onlyCrew {
+    function updateDrainMax(address drainAddress, uint256 _max) external onlyCrew {
         // We never allow an 'active' drain to have max == 0, and can use that as proof it is one
-        require(drains[drainAddress].max != 0, "TreasureChest.updateDrainMax.0");
+        require(drains[drainAddress].max != 0 wei, "TreasureChest.updateDrainMax.0");
         // If a drain's max is 0, we'll never end up doing anything, so ignore it
-        require(_max != 0, "TreasureChest.updateDrainMax.1");
+        require(_max != 0 wei, "TreasureChest.updateDrainMax.1");
         // If a drain's min is greater than its max, our math will screw up
         require(drains[drainAddress].min <= _max, "TreasureChest.updateDrainMax.2");
 
+
         // Update max
         drains[drainAddress].max = _max;
+
+        emit TreasureChest_DrainUpdated(drainAddress, drains[drainAddress].min, _max);
     }
 
     /**
@@ -98,15 +125,40 @@ contract TreasureChest is Crewed {
      *    reveal past drains. If we try updating, Drain.max will not let it pass.
      *    If we want to add a new one, it will simply be over written anyway.
      */
-    function removeDrain(address drainAddress) public onlyCrew {
+    function removeDrain(address drainAddress) external onlyCrew {
         // We never allow an 'active' drain to have max == 0, and can use that as proof it is one
-        require(drains[drainAddress].max != 0, "TreasureChest.removeDrain");
+        require(drains[drainAddress].max != 0 wei, "TreasureChest.removeDrain");
+
 
         // Since we don't allow drain addresses to be 0x0, we can nullify the
         // drain pointer. We rely on the number of drains to be relatively
         // low, so calls to view drainPointers is cheap.
-        drainPointers[drains[drainAddress].index] = 0x0;
+        drainPointers[drains[drainAddress].index] = address(0x0);
+
         // Must zero out max, as this is what we use to check drain status
-        drains[drainAddress].max = 0;
+        drains[drainAddress].max = 0 wei;
+
+        emit TreasureChest_DrainRemoved(drainAddress);
+    }
+
+    function send(address drainAddress) external {
+        // We never allow an 'active' drain to have max == 0, and can use that as proof it is one
+        require(drains[drainAddress].max != 0 wei, "TreasureChest.send.0");
+        // The given address must be below our specified threshold
+        require(drainAddress.balance < drains[drainAddress].min, "TreasureChest.send.1");
+
+
+        // this operation would cost ether every time it was called
+        uint256 amountToBeSent = drains[drainAddress].max - drainAddress.balance;
+
+        // we can only give what we have
+        if (address(this).balance < amountToBeSent) {
+            amountToBeSent = address(this).balance;
+        }
+
+        // returns true if successful, reference https://solidity.readthedocs.io/en/v0.5.1/units-and-global-variables.html#members-of-address-types
+        drainAddress.transfer(amountToBeSent);
+
+        emit TreasureChest_PaymentSent(drainAddress, amountToBeSent, address(this).balance);
     }
 }
