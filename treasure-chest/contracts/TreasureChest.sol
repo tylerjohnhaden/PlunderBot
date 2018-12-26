@@ -25,7 +25,6 @@ import "./Crewed.sol";
 
 contract TreasureChest is Crewed {
 
-    //
     event TreasureChest_Created(address creator);
     event TreasureChest_PaymentReceived(address indexed payerAddress, uint256 amount, uint256 currentBalance);
 
@@ -104,7 +103,7 @@ contract TreasureChest is Crewed {
         emit TreasureChest_DrainUpdated(drainAddress, _min, drains[drainAddress].max);
     }
 
-    function updateDrainMax(address drainAddress, uint256 _max) external onlyCrew {
+    function updateDrainMax(address drainAddress, uint256 _max) public onlyCrew {
         // We never allow an 'active' drain to have max == 0, and can use that as proof it is one
         require(drains[drainAddress].max != 0 wei, "TreasureChest.updateDrainMax.0");
         // If a drain's max is 0, we'll never end up doing anything, so ignore it
@@ -125,7 +124,7 @@ contract TreasureChest is Crewed {
      *    reveal past drains. If we try updating, Drain.max will not let it pass.
      *    If we want to add a new one, it will simply be over written anyway.
      */
-    function removeDrain(address drainAddress) external onlyCrew {
+    function removeDrain(address drainAddress) public onlyCrew {
         // We never allow an 'active' drain to have max == 0, and can use that as proof it is one
         require(drains[drainAddress].max != 0 wei, "TreasureChest.removeDrain");
 
@@ -141,7 +140,7 @@ contract TreasureChest is Crewed {
         emit TreasureChest_DrainRemoved(drainAddress);
     }
 
-    function send(address drainAddress) external {
+    function send(address payable drainAddress) public {
         // We never allow an 'active' drain to have max == 0, and can use that as proof it is one
         require(drains[drainAddress].max != 0 wei, "TreasureChest.send.0");
         // The given address must be below our specified threshold
@@ -156,9 +155,31 @@ contract TreasureChest is Crewed {
             amountToBeSent = address(this).balance;
         }
 
-        // returns true if successful, reference https://solidity.readthedocs.io/en/v0.5.1/units-and-global-variables.html#members-of-address-types
+        // reference https://solidity.readthedocs.io/en/v0.5.1/units-and-global-variables.html#members-of-address-types
         drainAddress.transfer(amountToBeSent);
 
         emit TreasureChest_PaymentSent(drainAddress, amountToBeSent, address(this).balance);
+    }
+
+    function isADrain(address drainAddress) public view returns (bool) {
+        return drains[drainAddress].max != 0 wei;
+    }
+
+    function getIndexByAddress(address drainAddress) public view returns (uint256) {
+        require(drains[drainAddress].max != 0 wei, "TreasureChest.getIndexByAddress");
+
+        return drains[drainAddress].index;
+    }
+
+    function getMinByAddress(address drainAddress) public view returns (uint256) {
+        require(drains[drainAddress].max != 0 wei, "TreasureChest.getMinByAddress");
+
+        return drains[drainAddress].min;
+    }
+
+    function getMaxByAddress(address drainAddress) public view returns (uint256) {
+        require(drains[drainAddress].max != 0 wei, "TreasureChest.getMaxByAddress");
+
+        return drains[drainAddress].max;
     }
 }

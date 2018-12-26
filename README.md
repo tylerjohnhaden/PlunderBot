@@ -15,6 +15,7 @@ A robot that steals doubly fake internet money
   - cd lambda && zip -r9 ../function.zip ./* && cd ..
   - upload to aws lambda
 
+https://kovan.etherscan.io/address/0xB0C89d94ed0a571C9a89d835524AfD83875F5441
 
 serverless create --template aws-python3 --path serverless-parrot
 

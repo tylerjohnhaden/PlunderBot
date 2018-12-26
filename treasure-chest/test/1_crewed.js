@@ -4,9 +4,6 @@ require('truffle-test-utils').init();
 
 const TreasureChest = artifacts.require('TreasureChest');
 
-function vmException(reason) {
-    return 'VM Exception while processing transaction: revert ' + reason;
-}
 
 contract('TreasureChest', (accounts) => {
 
@@ -14,6 +11,9 @@ contract('TreasureChest', (accounts) => {
     let secondAccount = accounts[1];
     let thirdAccount = accounts[2];
     let treasureChest;
+
+    const zeroAddress = '0x0000000000000000000000000000000000000000';
+
 
     // build up and tear down a new TreasureChest before each test
     beforeEach(async () => {
@@ -23,34 +23,43 @@ contract('TreasureChest', (accounts) => {
 
     it('has creator as a crew member by default', async () => {
         let creatorIsCrewMember = await treasureChest.crew(creator, { from: creator });
-        assert(creatorIsCrewMember === true, 'The creator of the contract is not a crew member!');
+        assert.isTrue(creatorIsCrewMember, 'The creator of the contract is not a crew member!');
     });
 
-    // TODO: try to test creating the contract with address = 0x0 ?
+    // TODO: try to test creating the contract with the zero address ?
+    // TODO: test emitted events in constructor ?
 
     it('can add a crew member from another crew member', async () => {
-        let secondAccountIsCrewMemberBefore = await treasureChest.crew(secondAccount, { from: creator });
+        assert.isFalse(await treasureChest.crew(secondAccount, { from: creator }),
+            'A non-creator address was crew by default!');
 
-        await treasureChest.addCrewMember(secondAccount, { from: creator });
+        let addingResult = await treasureChest.addCrewMember(secondAccount, { from: creator });
 
-        let secondAccountIsCrewMemberAfter = await treasureChest.crew(secondAccount, { from: creator });
+        assert.isTrue(await treasureChest.crew(secondAccount, { from: creator }),
+            'An attempt to add another crew member failed!');
 
-        assert(secondAccountIsCrewMemberBefore === false, 'A non-creator address was crew by default!');
-        assert(secondAccountIsCrewMemberAfter === true, 'An attempt to add another crew member failed!');
+        assert.web3AllEvents(addingResult, [{
+            event: 'Crewed_CrewAdded',
+            args: {
+                crewMember: secondAccount,
+                operator: creator,
+                0: secondAccount,
+                1: creator,
+                __length__: 2
+            }
+        }], 'The Crewed_CrewAdded event wasn\'t received!');
     });
 
     it('cannot add a crew member with the address 0x0', async () => {
         try {
-            await treasureChest.addCrewMember('0x0', { from: creator });
+            await treasureChest.addCrewMember(zeroAddress, { from: creator });
 
         } catch(err) {
-            assert(err.message === vmException('Crewed.addCrewMember'),
-                'Adding 0x0 to the crew threw the wrong revert message!');
-
+            assert.equal(err.reason, 'Crewed.addCrewMember', 'Adding 0x0 to the crew threw the wrong revert message!');
             return;
         }
 
-        assert(false, 'Adding 0x0 to the crew did not revert!');
+        assert.fail('Adding 0x0 to the crew did not revert!');
     });
 
     it('cannot add a crew member from a non crew member', async () => {
@@ -58,27 +67,37 @@ contract('TreasureChest', (accounts) => {
             await treasureChest.addCrewMember(secondAccount, { from: thirdAccount });
 
         } catch(err) {
-            assert(err.message === vmException('Crewed.onlyCrew'),
+            assert.equal(err.reason, 'Crewed.onlyCrew',
                 'Adding crew from a non crew member threw the wrong revert message!');
-
             return;
         }
 
-        assert(false, 'Adding crew from a non crew member did not revert!');
+        assert.fail('Adding crew from a non crew member did not revert!');
     });
 
     it('can let a crew member be removed', async () => {
-        if (false === await treasureChest.crew(thirdAccount, { from: thirdAccount })) {
+        if (!await treasureChest.crew(thirdAccount, { from: thirdAccount })) {
             await treasureChest.addCrewMember(thirdAccount, { from: creator });
         }
 
-        assert(true === await treasureChest.crew(thirdAccount, { from: thirdAccount }),
+        assert.isTrue(await treasureChest.crew(thirdAccount, { from: thirdAccount }),
             'Un-able to add third account from creator');
 
-        await treasureChest.removeCrewMember(thirdAccount, { from: creator });
+        let removalResult = await treasureChest.removeCrewMember(thirdAccount, { from: creator });
 
-        assert(false === await treasureChest.crew(thirdAccount, { from: thirdAccount }),
+        assert.isFalse(await treasureChest.crew(thirdAccount, { from: thirdAccount }),
             'Removing third account from crew was unsuccessful!');
+
+        assert.web3AllEvents(removalResult, [{
+            event: 'Crewed_CrewRemoved',
+            args: {
+                crewMember: thirdAccount,
+                operator: creator,
+                0: thirdAccount,
+                1: creator,
+                __length__: 2
+            }
+        }], 'The Crewed_CrewRemoved event wasn\'t received!');
     });
 
 });

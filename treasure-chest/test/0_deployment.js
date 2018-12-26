@@ -2,6 +2,7 @@
 
 require('truffle-test-utils').init();
 
+
 const TreasureChest = artifacts.require('TreasureChest');
 
 const MAX_DEPLOYED_BYTECODE_SIZE = 24576;
@@ -20,7 +21,7 @@ contract('TreasureChest', (accounts) => {
         let bytecodeSize = treasureChest.constructor._json.bytecode.length / 2;
         let deployedBytecodeSize = treasureChest.constructor._json.deployedBytecode.length / 2;
 
-        console.info('TreasureChest deployed at address: ' + web3.toChecksumAddress(treasureChest.address))
+        console.info('TreasureChest deployed at address: ' + web3.utils.toChecksumAddress(treasureChest.address))
         console.info(' -- size of bytecode in bytes = ', bytecodeSize);
         console.info(' -- size of deployed in bytes = ', deployedBytecodeSize);
         console.info(' -- initialisation and constructor code in bytes = ', bytecodeSize - deployedBytecodeSize);

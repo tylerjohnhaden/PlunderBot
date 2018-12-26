@@ -23,6 +23,8 @@ contract Crewed {
 
         // Set the contract's creator as a crew member, we need at least one
         crew[msg.sender] = true;
+
+        emit Crewed_CrewAdded(msg.sender, msg.sender);
     }
 
     /**
@@ -50,11 +52,15 @@ contract Crewed {
 
         // Set to true to be welcomed into the crew
         crew[crewMember] = true;
+
+        emit Crewed_CrewAdded(crewMember, msg.sender);
     }
 
     function removeCrewMember(address crewMember) public onlyCrew {
         // Doesn't matter if crewMember is already false, just set anyway
         // If you're spending money on removing non crew members, oh well
         crew[crewMember] = false;
+
+        emit Crewed_CrewRemoved(crewMember, msg.sender);
     }
 }
