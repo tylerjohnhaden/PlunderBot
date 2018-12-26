@@ -1,6 +1,6 @@
 pragma solidity ^0.5.0;
 
-// Solidity 0.5.1 reference documentation --- https://solidity.readthedocs.io/en/v0.5.1/
+// Solidity 0.5.1 reference documentation --- https://solidity.readthedocs.io/en/v0.5.0/
 
 /**# A YAML specification for all the explicit revert messages in TreasureChest
 
@@ -155,7 +155,7 @@ contract TreasureChest is Crewed {
             amountToBeSent = address(this).balance;
         }
 
-        // reference https://solidity.readthedocs.io/en/v0.5.1/units-and-global-variables.html#members-of-address-types
+        // reference https://solidity.readthedocs.io/en/v0.5.0/units-and-global-variables.html#members-of-address-types
         drainAddress.transfer(amountToBeSent);
 
         emit TreasureChest_PaymentSent(drainAddress, amountToBeSent, address(this).balance);

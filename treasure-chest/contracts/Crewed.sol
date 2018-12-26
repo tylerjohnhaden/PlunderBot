@@ -38,7 +38,7 @@ contract Crewed {
      *        external function call. This includes calls to
      *        library functions."
      *
-     *   https://solidity.readthedocs.io/en/v0.5.1/units-and-global-variables.html#special-variables-and-functions
+     *   https://solidity.readthedocs.io/en/v0.5.0/units-and-global-variables.html#special-variables-and-functions
      */
     modifier onlyCrew() {
         // You must be in the crew to call this.
