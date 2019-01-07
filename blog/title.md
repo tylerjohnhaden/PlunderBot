@@ -8,7 +8,7 @@ tags:
 - cryptocurrencies
 - ether
 date: 
-title: title
+title: Intro to some 
 image: 
 ---
 

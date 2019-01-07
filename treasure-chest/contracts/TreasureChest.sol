@@ -19,6 +19,13 @@ Revert:
             1: "The given max must be non-zero"
             2: "The given max must be greater than or equal to the current min"
         removeDrain: "You can't remove a 'non active' drain"
+        send:
+            0: "The specified drain must be 'active'"
+            1: "The given address must be below our specified threshold"
+        getIndexByAddress: "The specified drain must be 'active'"
+        getMinByAddress: "The specified drain must be 'active'"
+        getMaxByAddress: "The specified drain must be 'active'"
+
 */
 
 import "./Crewed.sol";
@@ -166,18 +173,21 @@ contract TreasureChest is Crewed {
     }
 
     function getIndexByAddress(address drainAddress) public view returns (uint256) {
+        // the specified address is not a drain
         require(drains[drainAddress].max != 0 wei, "TreasureChest.getIndexByAddress");
 
         return drains[drainAddress].index;
     }
 
     function getMinByAddress(address drainAddress) public view returns (uint256) {
+        // the specified address is not a drain
         require(drains[drainAddress].max != 0 wei, "TreasureChest.getMinByAddress");
 
         return drains[drainAddress].min;
     }
 
     function getMaxByAddress(address drainAddress) public view returns (uint256) {
+        // the specified address is not a drain
         require(drains[drainAddress].max != 0 wei, "TreasureChest.getMaxByAddress");
 
         return drains[drainAddress].max;

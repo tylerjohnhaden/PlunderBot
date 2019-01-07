@@ -16,6 +16,9 @@ A robot that steals doubly fake internet money
   - upload to aws lambda
 
 https://kovan.etherscan.io/address/0xB0C89d94ed0a571C9a89d835524AfD83875F5441
+https://kovan.etherscan.io/address/0x6383f3a4adef17831e87782b476c2670edf51568
+
+https://etherconverter.online/
 
 serverless create --template aws-python3 --path serverless-parrot
 
