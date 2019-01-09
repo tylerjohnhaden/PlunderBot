@@ -1,17 +1,15 @@
-// https://truffleframework.com/docs/truffle/testing/writing-tests-in-javascript
-
 require('truffle-test-utils').init();
-
 
 const TreasureChest = artifacts.require('TreasureChest');
 
 const MAX_DEPLOYED_BYTECODE_SIZE = 24576;
 
+
 contract('TreasureChest', (accounts) => {
 
     let treasureChest;
 
-    // build up and tear down a new TreasureChest before each test
+    // build up and tear down a new MyFirstContract before each test
     beforeEach(async () => {
         treasureChest = await TreasureChest.deployed();
     });

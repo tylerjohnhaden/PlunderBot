@@ -17,7 +17,7 @@ contract Crewed {
     /// crew: bit mapping for authorized operator addresses for this contract
     mapping(address => bool) public crew;
 
-    constructor() public {
+    constructor() internal {
         // We don't allow 0x0 to be a crew member, or contract creator.
         require(msg.sender != address(0x0), "Crewed.constructor");
 

@@ -1,6 +1,6 @@
 pragma solidity ^0.5.0;
 
-// Solidity 0.5.1 reference documentation --- https://solidity.readthedocs.io/en/v0.5.0/
+// Solidity 0.5.0 reference documentation --- https://solidity.readthedocs.io/en/v0.5.0/
 
 /**# A YAML specification for all the explicit revert messages in TreasureChest
 
