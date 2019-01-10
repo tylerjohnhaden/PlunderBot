@@ -6,14 +6,14 @@ tags:
 - blockchain
 - ether
 date: 
-title: Building your First Truffle Project
+title: The Hipster's Guide to Truffle
 image: 
 ---
 
-An introduction on how to get started with a Truffle-based Solidity project. This blog series will not only explain how to get started with [Truffle](https://truffleframework.com/docs/truffle/overview) as an Ethereum smart contract framework, but will also describe boilerplate code that will make your life a ton easier (think linting, test coverage, development blockchain, scripted testing, and deployment management).
+An introduction on how to get started with a Truffle-based Solidity project. This blog series will not only explain how to get started with [Truffle](https://truffleframework.com/docs/truffle/overview) as an Ethereum smart contract framework, but will also describe boilerplate code that will make your life a ton easier (think linting, test coverage, development blockchain, scripted testing, and deployment management). The goal will to be as transparent as possible about all the tools and configurations that are used, because it usually takes a while to start really getting the whole blockchain thing.
 
 # Assumptions
-This tutorial will assume that you have experience with basic bash, node, and npm. It will not assume that you know anything about blockchains or Ethereum.
+This tutorial will assume that you have experience with basic bash, node, and npm. 
 
 # Dependencies
 - node, npm
@@ -56,7 +56,7 @@ When you run `ls -la` you should see:
 
 Truffle init was responsible for creating three directories (`contracts`, `migrations`, and `test`) along with three files (`Migrations.sol`, `1_initial_migrations.js`, and `truffle-config.js`). Here are their descriptions, but examples on how to add to them, and organize your project will continue below.
 
-- `contracts` will store all your Solidity (.sol files). This is where you will add any smart contracts, libraries, or interfaces that you need at compile time. 
+- `contracts/` will store all your Solidity (.sol files). This is where you will add any smart contracts, libraries, or interfaces that you need at compile time. 
   - `Migrations.sol` is a complete, fully working smart contract written in Solidity. It is used by truffle to ensure that your project's deployment to the blockchain is carried out in the proper sequence. 
   
         pragma solidity >=0.4.21 <0.6.0;
@@ -69,18 +69,21 @@ Truffle init was responsible for creating three directories (`contracts`, `migra
             constructor() public {
                 owner = msg.sender;
             }
-                                                                                   modifier restricted() {
+            
+            modifier restricted() {
                 if (msg.sender == owner) _;
             }
-                                                                                    function setCompleted(uint completed) public restricted {
+            
+            function setCompleted(uint completed) public restricted {
                 lastCompletedMigration = completed;
             }
-                                                                                   function upgrade(address newAddress) public restricted {
+            
+            function upgrade(address newAddress) public restricted {
                 Migrations upgraded = Migrations(newAddress);
                 upgraded.setCompleted(lastCompletedMigration);
             }
          }
-- `migrations` will store truffle "deployer" Javascript files. Every time you want to deploy a contract, you'll need to tell truffle which one, and what constructor arguments you may need.
+- `migrations/` will store truffle "deployer" Javascript files. Every time you want to deploy a contract, you'll need to tell truffle which one, and what constructor arguments you may need.
   - `1_initial_migration.js` is the script that deploys our Migration contract. It is the most basic type of deployment because it requires no library linking, or constructor arguments.
   
         var Migrations = artifacts.require("./Migrations.sol");
@@ -88,7 +91,7 @@ Truffle init was responsible for creating three directories (`contracts`, `migra
         module.exports = function(deployer) {
           deployer.deploy(Migrations);
         };
-- `test` is pretty self explanatory. It can contain js or sol files, depending on your choice of testing language. It starts off empty, but we will add a test later on.
+- `test/` is pretty self explanatory. It can contain js or sol files, depending on your choice of testing language. It starts off empty, but we will add a test later on.
 - `truffle-config.js` is the main configuration for your Truffle project. This is where we define what networks to use, gas usages, addresses to deploy with, and a few other variables.
         
         module.exports = {
@@ -124,7 +127,7 @@ Truffle will create `build/contracts/Migrations.json`. This json file contains a
             }
             ...
         }
-The two most important parts are the "abi" and bytecode/deployedBytecode. 
+The two most important parts are the "abi" and "bytecode"/"deployedBytecode". 
 - Ethereum has specified a common way of interacting with contracts using the [Application Binary Interface](https://solidity.readthedocs.io/en/develop/abi-spec.html) (ABI). It is what tells clients how to create transactions that will run on the contract, and what events you should expect. There's more in-depth information in the documentation, and I highly recommend reading it if you plan on developing smart contracts with Solidity.
 - The bytecode is what gets run on the [Ethereum Virtual Machine](https://solidity.readthedocs.io/en/v0.5.2/introduction-to-smart-contracts.html#index-6) (EVM). In order for you to "deploy" a contract onto the Ethereum blockchain, you must submit the deployedBytecode as a transaction. Technically, the bytecode is what is stored as the contract, and when you call a function, it can only interact with that bytecode in the EVM.
 
@@ -189,7 +192,7 @@ Anyone who knows the protocols that Ethereum layed out, can run the EVM, or conn
                 "gasLimit": 6500000
             }
         }
-    This creates the [ganache-cli](https://github.com/trufflesuite/ganache-cli) command with a few config variables. `networkId` is arbitrary, as long as you aren't using one of the public ids such as 1, 3, 4, 42, etc. You can update `gasPrice` or `gasLimit`, but for now lets leave these defaults.
+    This creates the [ganache-cli](https://github.com/trufflesuite/ganache-cli) command with a few config variables. `networkId` is arbitrary, as long as you aren't using one of the public ids such as 1, 3, 4, 42, etc (see [Test Networks Explanation](https://medium.com/coinmonks/ethereum-test-networks-69a5463789be)). You can update `gasPrice` or `gasLimit`, but for now lets leave these defaults.
 
 3. Ganache will also take an optional mnemonic. This mnemonic serves to generate the private keys to be given starting balances of ether. Every Ethereum blockchain must start with some starting amount, otherwise there is nothing to trade. Without a mnemonic, Ganache will randomly generate these private keys, but let's create one just so it is consistent between runs.
 
@@ -203,9 +206,20 @@ Anyone who knows the protocols that Ethereum layed out, can run the EVM, or conn
         npm run ganache
 
     ![todo add pic]()
-    Ganache will generate accounts based on what parameters you run it with. The default is 10 with starting balances of 100 Ether. The cli will display the addresses, private keys, mnemonic, gas price, and gas limit. These address can technically be used on any Ethereum blockchain, not just you local one (but they probably have 0 real Ether).
+    Ganache will generate accounts based on what parameters you run it with. The default is 10 with starting balances of 100 Ether. The cli will display the addresses, private keys, mnemonic, gas price, and gas limit. These addresses can technically be used on any Ethereum blockchain, not just you local one (but they probably have 0 real Ether).
     
-    This Ganache client will sit around, waiting for someone to send it a transaction on port 8545 by default. When it receives that transaction, it will attempt to run it on the EVM (see if the bytecode is correct) and it will then immediately create a single block with that transaction. On the main Ethereum blockchain, several transactions will be added to any given block, but we can be less efficient on our local version. All clients like this one should have a specific set of api calls that can read or write to the blockchain. This is why all transactions are public to everyone in the network.
+    This Ganache client will sit around, waiting for someone to send it a transaction on port 8545 by default. When it receives that transaction, it will attempt to run it on the EVM (see if the bytecode is correct) and it will then immediately create a single block with that transaction (mine the block). On the main Ethereum blockchain, several transactions will be added to any given block, but we can be less efficient on our local version. All clients like this one should have a specific set of api calls that can read or write to the blockchain. This is why all transactions are public to everyone in the network.
+    
+5. Test the Ganache client by sending an api call from another terminal
+
+        curl http://127.0.0.1:8545 \
+            -X POST \
+            -H "Content-Type: application/json" \
+            -d '{"jsonrpc": "2.0", "method": "web3_clientVersion"}'
+
+    ![todo add pic]()
+    As you can see, our client responds with a client version, which tells us which protocol to use. Don't worry, you probably won't have to deal with different protocols if you're reading this blog.
+
 
 ## Deploy to your local blockchain
 
@@ -229,7 +243,7 @@ Now that we have a blockchain client to store our transactions, lets deploy our 
                 }
             }
         }
-    As you can see, we use the same configs that we used to run ganache. If we use arbitrary numbers, it won't necessarily fail, but these ensure all the numbers we see for gas usage are comparable.
+    As you can see, we use the same configs that we used to run ganache. If we use arbitrary numbers, it won't necessarily fail, but these ensure all the numbers we see for gas usage are consistent.
     
 2. Let's add some more scripts to `package.json`:
 
@@ -240,16 +254,16 @@ Now that we have a blockchain client to store our transactions, lets deploy our 
 
         npm install concurrently --save-dev
 
-4. Run the migrate script
+4. Run the script
 
         npm run start
     
-    When we run this, truffle will first compile, and then run its migration steps using the development network.
+    When we run this, truffle will first compile, and then run its migration steps using the development network. The development network simply points to our Ganache client.
     
     ![todo add pic]()
     Ganache's output will contain a lot of good information about what was going on. You get back a list of all the API calls made to it, such as "eth_getBlockByNumber" or "eth_sendTransaction". When you send a transaction, it'll display things like the transaction hash, gas usage, block number, and contract address (if the transaction created a contract).
     
-As you can see, the client is still running. You can now send transactions to localhost:8545 from Javascript libraries ([Web3js](https://web3js.readthedocs.io/en/1.0/)) or even curl although the syntax starts to become cumbersome.
+As you can see, the client is still running. You can now send transactions to localhost:8545 from browser Javascript libraries ([Web3js](https://web3js.readthedocs.io/en/1.0/)), Java libraries ([WEb3j](https://github.com/web3j/web3j)) or even curl ... although the syntax starts to become cumbersome.
 
 If you deployed a contract, you could now send transactions that run specific functions on those contracts. You have to specify which address to send these to. In order to find out which address your contract was deployed on, you can either follow the Ganache logs, or look it up in `build/contracts/Migrations.sol`:
 
@@ -263,7 +277,169 @@ If you deployed a contract, you could now send transactions that run specific fu
           },
    Here, you can see the network is specified by a number, our local one we chose as 3431 (arbitrarily chosen). `transactionHash` is a unique identifier of that transaction. Anyone can look up that specific transaction based on it, and will be able to see all the events emitted, or other internal transactions that occurred during it. Even if it reverts because of some runtime error, it'll still be present and forever recorded that you made a mistake!
    
-   So now we need to specify the address `0x2fAeC1D9fC41FC63976187cf912264a632BDc05D` if we want to talk to Migrations.
+   So now we need to specify the address `0x2fAeC1D9fC41FC63976187cf912264a632BDc05D` if we want to talk to the contract "Migrations".
 
 # Using Infura to connect to public networks
 
+So far, we have created a real working blockchain. However there are already a few out there that are running "decentralized". In fact, the main one is where all the money is in Ethereum. The developers of Ethereum also created some test networks that are decentralized, but you don't need money to start using it. For our purposes, we are going to work with the three main test networks Kovan, Rinkeby, and Ropsten, along with Mainnet (the big one).
+
+Again, as long as you know the protocols that are public domain, you can connect to these public networks with your own custom clients. However, this is a lot of work, and hipsters don't like working more than they have to. So we can either use Ethereum's open source Go client [Geth](https://github.com/ethereum/go-ethereum/wiki/geth) or we can be even lazier, and use a free hosted service called Infura.
+
+[Infura](https://infura.io) is a super easy way to connect to the public networks because you don't have to worry about running code on a server, or keeping it available. We're going to sign up for a free project. It'll give us a few important things to work with. For this blog, we will need the project id, and the endpoint url. ![todo add pic?]() We'll call this our Infura node because in the background, Infura is running a Geth client as a node in one of the public networks.
+
+We also want to use public networks because we might want to call other contracts that may not exist on our local development network. For example, if you want to exchange Dai tokens (a stable coin), you have to test on Kovan because only Kovan and Mainnet have the Dai contract.
+
+1. Add this project id as an environment variable
+
+        export INFURA_PROJECT_ID=1234whatever
+
+2. Let's check to see if it is working properly.
+
+        curl https://mainnet.infura.io/v3/$INFURA_PROJECT_ID \
+            -X POST \
+            -H "Content-Type: application/json" \
+            -d '{"jsonrpc":"2.0","method":"web3_clientVersion","params": [],"id":1}'
+
+    ![todo add pic]()
+    Awesome, looks like we hit our new Infura client
+
+## Forking from Infura
+
+You can use this new client to do essentially everything we just did on our Ganache client. However, if you want to write transactions to these public blockchains, it'll cost Ether. Even on the test networks, you still have to acquire Ether. Also, all of these public transactions are persisted across the world. For development, we still want to spin up a local ganache client to keep our code base relatively private, and so we aren't incurring unnecessary costs.
+
+We can leverage our Infura client by forking it into our local Ganache. Forking is a very literal term in the sense that we are taking the "linked list" that makes up the public blockchain, and then adding our own transactions onto the end of it. We don't care about public transactions "post fork" because our linked list continues off from the other (never linking back up again). If we reference a contact that was created before the fork, our local ganache will simply search our Infura client for that particular code. It'll never change, even if other people interact with the same contract on a different blockchain.
+
+Luckily, it is very easy to fork into Ganache. We just have to specify the Infura client endpoint along with which network. 
+
+1. Lets add to our scripts in `package.json`
+
+        "start:kovan": "concurrently \"npm run ganache:kovan\" \"npm run migrate:kovan\"",
+        "start:rinkeby": "concurrently \"npm run ganache:rinkeby\" \"npm run migrate\"",
+        "start:ropsten": "concurrently \"npm run ganache:ropsten\" \"npm run migrate\"",
+        "ganache:kovan": "npm run ganache -- --fork \"https://kovan.infura.io/v3/$INFURA_PROJECT_ID\"",
+        "ganache:rinkeby": "npm run ganache -- --fork \"https://rinkeby.infura.io/v3/$INFURA_PROJECT_ID\"",
+        "ganache:ropsten": "npm run ganache -- --fork \"https://ropsten.infura.io/v3/$INFURA_PROJECT_ID\"",
+        "migrate:kovan": "rm -rf build && truffle migrate --reset --compile-all --network kovan",
+        "migrate:rinkeby": "rm -rf build && truffle migrate --reset --compile-all --network rinkeby",
+        "migrate:ropsten": "rm -rf build && truffle migrate --reset --compile-all --network ropsten",
+    If we were to run migrate:kovan for example, it would actually send the deployment transactions to the public networks. That is why for development and testing, will still migrate to the development network after forking. 
+
+2. We need to add to our `truffle-config.js` to point to these new networks:
+
+        var HDWalletProvider = require('truffle-hdwallet-provider');
+
+        // environment variables not set in the package config
+        var infuraProjectId = process.env.INFURA_PROJECT_ID;
+        var mnemonic = process.env.MNEMONIC;
+        
+        // naive environment assertions, since these aren't present by default
+        if (infuraProjectId === undefined || infuraProjectId === '') {
+            throw new Error('truffle-config.js needs the environment variable "INFURA_PROJECT_ID"');
+        } else if (mnemonic === undefined) {
+            throw new Error('truffle-config.js needs the environment variable "MNEMONIC"');
+        } else if (mnemonic.split(' ').length != 12) {
+            throw new Error('The environment variable "MNEMONIC" must be 12 words (space delineated)');
+        }
+        
+        modules.export = {
+            ...
+            kovan: {
+                provider: () =>
+                    new HDWalletProvider(mnemonic, `https://kovan.infura.io/v3/${infuraProjectId}`),
+                network_id: 42, // Kovan Id
+                gas: 3000000,
+                gasPrice: 100000000000
+            },
+            rinkeby: {
+                provider: () =>
+                    new HDWalletProvider(mnemonic, `https://rinkeby.infura.io/v3/${infuraProjectId}`),
+                network_id: 4, // Rinkeby Id
+                gas: 3000000,
+                gasPrice: 100000000000
+            },
+            ropsten: {
+                provider: () =>
+                    new HDWalletProvider(mnemonic, `https://ropsten.infura.io/v3/${infuraProjectId}`),
+                network_id: 3, // Ropsten Id
+                gas: 3000000,
+                gasPrice: 100000000000
+            },
+            live: {
+                provider: () =>
+                    new HDWalletProvider(mnemonic, `https://mainnet.infura.io/v3/${infuraProjectId}`),
+                network_id: 1, // Mainnet Id
+                gas: 4000000,
+                gasPrice: 100000000000
+            }
+        }
+    We have to use the mnemonic here, because when we start sending transactions to the main networks, we have to use existing addresses with balances. 
+    
+3. Now we need to install [HDWalletProvider](https://github.com/trufflesuite/truffle-hdwallet-provider) so we can turn mnemonics into our addresses and private keys.
+
+        npm install truffle-hdwallet-provider --save-dev
+
+4. Try running one or all of the forking scripts:
+        
+        npm run start:kovan
+
+Not a lot will change, but now you can call previously deployed contracts from within your contracts.
+
+# Testing
+
+The best part of the whole blog, we finally get to write some tests.
+
+Truffle comes with the command `truffle test` which will run all the unit tests, or specific ones if you specify them. First, we will add some scripts to abstract away the running of our local blockchain in conjunction with running the tests.
+
+1. Install two cool modules to help us run the unit tests:
+
+        npm install truffle-test-utils eth-gas-reporter --save-dev
+
+2. Add a script to `package.json`
+
+        "test": "concurrently \"npm run ganache\" \"npm run migrate && truffle test\" --kill-others --success first"
+    All this does is start a local Ganache client, migrate the current contracts, then run units tests on that deployed code. `--kill-others --success first` just tell Concurrently to stop running the Ganache client after the tests have finished.
+    
+3. We can update `truffle-config.js` to use eth-gas-reporter in it's mocha configuration
+
+        mocha: {
+            reporter: 'eth-gas-reporter',
+            reporterOptions : {
+                currency: 'USD',
+                gasPrice: 2
+            }
+        }
+    This will give us more information during the unit test, including gas usage for each function called.
+
+4. Now we can add our first unit test. Create the file `test/Deployment.test.js`:
+
+        require('truffle-test-utils').init();
+        
+        const Migrations = artifacts.require('Migrations');
+        
+        const MAX_DEPLOYED_BYTECODE_SIZE = 24576;
+        
+        
+        contract('Migrations', (accounts) => {
+        
+            let migrations;
+        
+            // build up and tear down a new Migrations before each test
+            beforeEach(async () => {
+                migrations = await Migrations.deployed();
+            });
+        
+            it('has a validated contract size', async () => {
+                // bytecode is in hexadecimal, where each byte is represented by two characters: 0x00 -> 0xff
+                let bytecodeSize = migrations.constructor._json.bytecode.length / 2;
+                let deployedBytecodeSize = migrations.constructor._json.deployedBytecode.length / 2;
+        
+                console.info('Migrations deployed at address: ' + web3.utils.toChecksumAddress(migrations.address))
+                console.info(' -- size of bytecode in bytes = ', bytecodeSize);
+                console.info(' -- size of deployed in bytes = ', deployedBytecodeSize);
+                console.info(' -- initialisation and constructor code in bytes = ', bytecodeSize - deployedBytecodeSize);
+        
+                // Make assertion on deployed since the initial transaction takes constructor bytecode into account
+                assert(deployedBytecodeSize <= MAX_DEPLOYED_BYTECODE_SIZE, 'Contract bytecode is too big to deploy!');
+            });
+        
+        });
