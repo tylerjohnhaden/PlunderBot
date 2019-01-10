@@ -29,9 +29,9 @@ var truffleConfig = {
             port: 8545,         // ganache defaults
             network_id: networkId,
             gas: gasLimit,
-            gasPrice: gasPrice,
-            // use the local ganache and the mnemonic to generate our main address
-            from: (new HDWalletProvider(mnemonic, "http://127.0.0.1:8545")).getAddress(0)
+            gasPrice: gasPrice //,
+//            // use the local ganache and the mnemonic to generate our main address
+//            from: (new HDWalletProvider(mnemonic, "http://127.0.0.1:8545")).getAddress(0)
         },
         kovan: {
             provider: () =>
