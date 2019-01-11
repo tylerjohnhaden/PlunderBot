@@ -17,10 +17,10 @@ An introduction on how to get started with a Truffle-based Solidity project. Thi
 ### Assumptions
 This tutorial will assume that you have experience with basic bash, node, and npm. 
 
-# Dependencies
+### Dependencies
 - node, npm
 
-We will be installing all our necessary node modules into the local project. You may also install globally, however you may want to keep it local, is because these tools and languages change very fast compared to most other development environments. For example, the Solidity compiler makes backwards compatibility breaking changes very often. *TODO: cite this*
+  We will be installing all our necessary node modules into the local project. You may also install globally, however you may want to keep it local, is because these tools and languages change very fast compared to most other development environments. For example, the Solidity compiler makes backwards compatibility breaking changes very often. *TODO: cite this*
 
 # Truffle Initialization
 1. Create a new directory to contain your truffle project.
@@ -52,13 +52,13 @@ Technically you now have a truffle project! It is pretty bare, but lets try to u
 
 ## Truffle's generated files
 
-When you run `ls -la` you should see:
+When you run `ls -l` you should see:
 
 ![truffle init directory](resources/truffle_init_directory.png)
 
-Truffle init was responsible for creating three directories (`contracts`, `migrations`, and `test`) along with three files (`Migrations.sol`, `1_initial_migrations.js`, and `truffle-config.js`). Here are their descriptions, but examples on how to add to them, and organize your project will continue below.
+Truffle init was responsible for creating three directories (`contracts/`, `migrations/`, and `test/`) along with three files (`Migrations.sol`, `1_initial_migrations.js`, and `truffle-config.js`). Here are their descriptions, but examples on how to add to them, and organize your project will continue below.
 
-- `contracts/` will store all your Solidity (.sol files). This is where you will add any smart contracts, libraries, or interfaces that you need at compile time. 
+- `contracts/` will store all your [Solidity](https://solidity.readthedocs.io/en/v0.5.2/) (.sol files). This is where you will add any smart contracts, libraries, or interfaces that you need at compile time. 
   - `Migrations.sol` is a complete, fully working smart contract written in Solidity. It is used by truffle to ensure that your project's deployment to the blockchain is carried out in the proper sequence. 
   
         pragma solidity >=0.4.21 <0.6.0;
@@ -392,7 +392,7 @@ Not a lot will change, but now you can call previously deployed contracts from w
 
 # Adding linting to your project
 
-When working with contract code, you should always follow best practices. Not because your technical lead is particularly stubborn, but because this code will be handling your client's money. You may assume that your solidity code will be audited for security and optimization. Linting is always the first step in this process.
+When working with contract code, you should always follow [best practices](https://solidity.readthedocs.io/en/v0.5.2/security-considerations.html#security-considerations). Not because your technical lead is particularly stubborn, but because this code will be handling your client's money. You may assume that your solidity code will be audited for security and optimization. Linting is always the first step in this process.
 
 1. Add [Ethlint](https://www.npmjs.com/package/ethlint)(formally know as Solium) to your project
     
