@@ -390,14 +390,14 @@ The best part of the whole blog, we finally get to write some tests.
 
 Truffle comes with the command `truffle test` which will run all the unit tests, or specific ones if you specify them. First, we will add some scripts to abstract away the running of our local blockchain in conjunction with running the tests.
 
-1. Install two cool modules to help us run the unit tests:
+1. Install two cool modules to help us run the unit and acceptance tests:
 
         npm install truffle-test-utils eth-gas-reporter --save-dev
 
 2. Add a script to `package.json`
 
         "test": "concurrently \"npm run ganache\" \"npm run migrate && truffle test\" --kill-others --success first"
-    All this does is start a local Ganache client, migrate the current contracts, then run units tests on that deployed code. `--kill-others --success first` just tell Concurrently to stop running the Ganache client after the tests have finished.
+    All this does is start a local Ganache client, migrate the current contracts, then run units/acceptance tests on that deployed code. `--kill-others --success first` just tells Concurrently to stop running the Ganache client after the tests have finished.
     
 3. We can update `truffle-config.js` to use eth-gas-reporter in it's mocha configuration
 
@@ -408,9 +408,9 @@ Truffle comes with the command `truffle test` which will run all the unit tests,
                 gasPrice: 2
             }
         }
-    This will give us more information during the unit test, including gas usage for each function called.
+    This will give us more information during the testing, including gas usage for each function called.
 
-4. Now we can add our first unit test. Create the file `test/Deployment.test.js`:
+4. Now we can add our first test. Create the file `test/Deployment.test.js`:
 
         require('truffle-test-utils').init();
         
@@ -426,6 +426,7 @@ Truffle comes with the command `truffle test` which will run all the unit tests,
             // build up and tear down a new Migrations before each test
             beforeEach(async () => {
                 migrations = await Migrations.deployed();
+                console.log(migrations);
             });
         
             it('has a validated contract size', async () => {
@@ -443,3 +444,98 @@ Truffle comes with the command `truffle test` which will run all the unit tests,
             });
         
         });
+    Here is an acceptance test. It can be writen for every contract because it makes no assumptions about the contract functions or data. Instead, it tests the compiled bytecode's size. It's important when writing smart contracts, to be aware of the transactions with the blockchain because not only do you pay for every byte of code, but some transactions are too large and will fail.
+
+5. We can also write a unit test
+
+        it('sets lastCompletedMigration by the owner', async () => {
+            let expectedCompleted = 1234;
+    
+            await migrations.setCompleted(expectedCompleted, { from: accounts[0] });
+    
+            assert.equal(expectedCompleted, await migrations.lastCompletedMigration({ from: accounts[0] }),
+                'setComplete did not update lastCompletedMigration');
+        });
+    Here is a unit test that tests the happy path for the function `setCompleted`. Notice the use of async and await in these tests. Every time we call the contract, we must wait for our client to respond. 
+
+# Adding linting to your project
+
+When working with contract code, you should always follow best practices. Not because your technical lead is particularly stubborn, but because this code will be handling your client's money. You may assume that your solidity code will be audited for security and optimization. Linting is always the first step in this process.
+
+1. Add [Ethlint](https://www.npmjs.com/package/ethlint)(formally know as Solium) to your project
+    
+        npm install ethlint --save-dev
+
+2. Init Solium
+
+        node_modules/.bin/solium --init
+    This generated two files `.soliumrc.json` and `.soliumignore`.
+    - `.soliumrc.json` will store your rules for running lint on the Solidity code.
+            
+            {
+              "extends": "solium:recommended",
+              "plugins": [
+                "security"
+              ],
+              "rules": {
+                "quotes": [
+                  "error",
+                  "double"
+                ],
+                "indentation": [
+                  "error",
+                  4
+                ],
+                "linebreak-style": [
+                  "error",
+                  "unix"
+                ]
+              }
+            }
+    - `.soliumignore` tells Ethlint what to skip. 
+    
+            node_modules
+            contracts/Migrations.sol
+        
+        There will end up being Solidity code from third parties, such as [OpenZeppelin](https://github.com/OpenZeppelin/openzeppelin-solidity). Obviously you will want to vet any code you include, but as far as getting started with development, you don't want to have to fix other people's styling errors.
+
+3. Update `.soliumrc.json` to include better security and general linting:
+
+        {
+          "extends": "solium:all",
+          "plugins": ["security"],
+          "rules": {
+            "arg-overflow": "off",
+            "blank-lines": "off",
+            "error-reason": "off",
+            "indentation": ["error", 4],
+            "lbrace": "off",
+            "linebreak-style": ["error", "unix"],
+            "max-len": ["error", 120],
+            "no-constant": ["error"],
+            "no-empty-blocks": "off",
+            "quotes": ["error", "double"],
+            "uppercase": "off",
+            "visibility-first": "error",
+        
+            "security/enforce-explicit-visibility": ["error"],
+            "security/no-block-members": ["warning"],
+            "security/no-inline-assembly": ["warning"]
+          }
+        }
+
+4. Optionally, update `.soliumignore` so that Ethlint will lint `Migrations.sol`
+
+5. Add Ethlint to your list of scripts. Then run the linter:
+
+        "lint:sol": "solium -d .",
+        "lint:sol:fix": "solium -d . --fix"
+    Ethlint will [fix some](https://github.com/duaraghav8/Ethlint/blob/master/lib/solium.js) mistakes
+        
+        npm run lint:sol
+    ![todo add pic]()
+    
+    *Todo explain pic*
+
+
+        

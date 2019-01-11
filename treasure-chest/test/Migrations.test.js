@@ -1,33 +1,42 @@
 require('truffle-test-utils').init();
 
-const TreasureChest = artifacts.require('TreasureChest');
+const Migrations = artifacts.require('Migrations');
 
 const MAX_DEPLOYED_BYTECODE_SIZE = 24576;
 
 
-contract('TreasureChest', (accounts) => {
+contract('Migrations', (accounts) => {
 
-    let treasureChest;
+    let migrations;
 
     // build up and tear down a new MyFirstContract before each test
     beforeEach(async () => {
-        treasureChest = await TreasureChest.deployed();
+        migrations = await Migrations.deployed();
         console.log('\n****************************************************\n*\n*\n*');
-        console.log(treasureChest);
+        console.log(migrations);
     });
 
     it('has a validated contract size', async () => {
         // bytecode is in hexadecimal, where each byte is represented by two characters: 0x00 -> 0xff
-        let bytecodeSize = treasureChest.constructor._json.bytecode.length / 2;
-        let deployedBytecodeSize = treasureChest.constructor._json.deployedBytecode.length / 2;
+        let bytecodeSize = migrations.constructor._json.bytecode.length / 2;
+        let deployedBytecodeSize = migrations.constructor._json.deployedBytecode.length / 2;
 
-        console.info('TreasureChest deployed at address: ' + web3.utils.toChecksumAddress(treasureChest.address))
+        console.info('Migrations deployed at address: ' + web3.utils.toChecksumAddress(migrations.address))
         console.info(' -- size of bytecode in bytes = ', bytecodeSize);
         console.info(' -- size of deployed in bytes = ', deployedBytecodeSize);
         console.info(' -- initialisation and constructor code in bytes = ', bytecodeSize - deployedBytecodeSize);
 
         // Make assertion on deployed since the initial transaction takes constructor bytecode into account
         assert(deployedBytecodeSize <= MAX_DEPLOYED_BYTECODE_SIZE, 'Contract bytecode is too big to deploy!');
+    });
+
+    it('only allows the owner to set complete', async () => {
+        let expectedCompleted = 1234;
+
+        await migrations.setCompleted(expectedCompleted, { from: accounts[0] });
+
+        assert.equal(expectedCompleted, await migrations.lastCompletedMigration({ from: accounts[0] }),
+            'setComplete did not update lastCompletedMigration');
     });
 
 });
