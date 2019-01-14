@@ -190,7 +190,8 @@ Definitions:
 - **mnemonic**: a list of 12 words that serve to generate your (private key, address) pair
 - **network**: a unique number that tells the client which chain to use. Think of each network as a separate blockchain that have all forked form Mainnet
 
-[Ethereum's own description of itself.](http://www.ethdocs.org/en/latest/introduction/what-is-ethereum.html)
+[Ethereum's own description of itself ...](http://www.ethdocs.org/en/latest/introduction/what-is-ethereum.html)
+> Ethereum in the narrow sense refers to a suite of protocols that define a platform for decentralised applications. At the heart of it is the Ethereum Virtual Machine (“EVM”), which can execute code of arbitrary algorithmic complexity. In computer science terms, Ethereum is “Turing complete”. Developers can create applications that run on the EVM using friendly programming languages modelled on existing languages like JavaScript and Python.
 
 As a smart contract *developer*, you don't really need to care about the exchange rate between [fiat](https://en.wikipedia.org/wiki/Fiat_money) and ether, or stock fluctuations. In fact, you can create your very own blockchain, where everything is free. The introduction of buying power is just necessary to ensure that the blockchain will live on, distributed across the world, with no grand organizer or power differential.
 
