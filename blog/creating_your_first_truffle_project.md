@@ -180,17 +180,17 @@ To understand how to run your smart contracts, you must first understand what a 
 
 Definitions:
 - **blockchain**: a data structure that looks like a linked list
-- **Ethereum**: a set of protocols that are responsible for turning "transactions" into "blocks", an implementation of a blockchain
-- **transaction**: a list of bytes (just think "bits") that may contain bytecode, data, or anything technically (improperly formatted transactions just get reverted)
+- **Ethereum**: a "platform", or a set of protocols that are responsible for turning "transactions" into "blocks"
+- **transaction**: a list of bytes that may contain bytecode, data, or anything technically (improperly formatted transactions just get reverted)
 - **block**: one of the linked nodes in the above stated "blockchain"
 - **gas**: some cash that is used to inventivize strangers to add your "transaction" to a "block"
-- **ether**: a mapping from "address" to a uint256
+- **ether**: a mapping from "address" to a uint256, every address as a balance
 - **address**: a number that is 20 bytes long
 - **private key**: a number that is 32 bytes long, every "private key" has exactly one "address" associated with it
 - **mnemonic**: a list of 12 words that serve to generate your (private key, address) pair
 - **network**: a unique number that tells the client which chain to use. Think of each network as a separate blockchain that have all forked form Mainnet
 
-[What is Ethereum?](http://www.ethdocs.org/en/latest/introduction/what-is-ethereum.html)
+[Ethereum's own description of itself.](http://www.ethdocs.org/en/latest/introduction/what-is-ethereum.html)
 
 As a smart contract *developer*, you don't really need to care about the exchange rate between [fiat](https://en.wikipedia.org/wiki/Fiat_money) and ether, or stock fluctuations. In fact, you can create your very own blockchain, where everything is free. The introduction of buying power is just necessary to ensure that the blockchain will live on, distributed across the world, with no grand organizer or power differential.
 
@@ -301,7 +301,7 @@ Now that we have a blockchain client to store our transactions, lets deploy our 
     ![pic missing](resources/truffle_migrate_2.png)
     Ganache's output will contain a lot of good information about what was going on. You get back a list of all the API calls made to it, such as "eth_getBlockByNumber" or "eth_sendTransaction". When you send a transaction, it will display things like the transaction hash, gas usage, block number, and contract address (if the transaction created a contract).
     
-As you can see, the client is still running. You can now send transactions to localhost:8545 from browser Javascript libraries ([Web3js](https://web3js.readthedocs.io/en/1.0/)), Java libraries ([WEb3j](https://github.com/web3j/web3j)) or even curl ... although the syntax starts to become cumbersome.
+As you can see, the client is still running. You can now send transactions to localhost:8545 from browser Javascript libraries ([Web3js](https://web3js.readthedocs.io/en/1.0/)), Java libraries ([Web3j](https://github.com/web3j/web3j)) or even curl ... although the syntax starts to become cumbersome.
 
 If you deployed a contract, you could now send transactions that run specific functions on those contracts. You have to specify which address to send these to. In order to find out which address your contract was deployed on, you can either follow the Ganache logs, or look it up in `build/contracts/Migrations.sol`:
 
