@@ -17,6 +17,7 @@ If you would like to explore the source code as a simple boilerplate project, ch
 ### Assumptions
 This tutorial will assume that you have experience with basic bash, node, and npm. 
 
+
 All of the dependencies we need should be OS agnostic, however if you may need to change the commands to suite your specific shell/OS.
 
 ### Dependencies
@@ -44,11 +45,13 @@ All of the dependencies we need should be OS agnostic, however if you may need t
         
         npm install truffle --save-dev
 
-   - If you want to double check all of our dependencies, run `node_modules/.bin/truffle version` ![todo: add pic]()
+   - If you want to double check all of our dependencies, run `node_modules/.bin/truffle version` ![pic missing](resources/truffle_version.png)
    
 4. Time to run Truffle's project init script
 
         node_modules/.bin/truffle init
+        
+    ![pic missing](resources/truffle_init.png)
 
 Technically you now have a truffle project! It is pretty bare, but lets try to understand what that script did for us.
 
@@ -56,7 +59,7 @@ Technically you now have a truffle project! It is pretty bare, but lets try to u
 
 When you run `ls -l` you should see:
 
-![truffle init directory](resources/truffle_init_directory.png)
+![pic missing](resources/truffle_directory.png)
 
 Truffle init was responsible for creating three directories (`contracts/`, `migrations/`, and `test/`) along with three files (`Migrations.sol`, `1_initial_migrations.js`, and `truffle-config.js`). Here are their descriptions, but examples on how to add to them, and organize your project will continue below.
 
@@ -114,7 +117,7 @@ Let us see if we can compile the single contract that was generated for us. It i
 
         node_modules/.bin/truffle compile
 
-![todo: add pic]()
+![pic missing](resources/truffle_compile.png)
 
 Truffle will create `build/contracts/Migrations.json`. This json file contains a lot of information about the compiled contract. It includes the whole compiled bytecode, along with function signatures, events, docs, and compiler information. 
         
@@ -221,13 +224,13 @@ Anyone who knows the protocols that Ethereum layed out, can run the EVM, or conn
         export MNEMONIC="genuine habit total coast ordinary violin empty mention muffin dream degree bunker"
     **Warning: This mnemonic should be secret!** You should treat this like a password. This is why we will always be using environment variables to inject into our scripts.
     
-    You can randomly generate by running ganach-cli without one. For example `node_modules/.bin/ganache-cli | grep Mnemonic` will output the single line with it. Then you can just kill the process with ^C. ![todo: add image]()
+    You can randomly generate by running ganach-cli without one. For example `node_modules/.bin/ganache-cli | grep Mnemonic` will output the single line with it. Then you can just kill the process with ^C. ![pic missing](resources/ganache_cli_mnemonic.png)
 
 4. Run Ganache and see what is generated
 
         npm run ganache
 
-    ![todo: add pic]()
+    ![pic missing](resources/ganache_cli.png)
     Ganache will generate accounts based on what parameters you run it with. The default is 10 with starting balances of 100 Ether. The cli will display the addresses, private keys, mnemonic, gas price, and gas limit. These addresses can technically be used on any Ethereum blockchain, not just you local one (but they probably have 0 real Ether).
     
     This Ganache client will sit around, waiting for someone to send it a transaction on port 8545 by default. When it receives that transaction, it will attempt to run it on the EVM (see if the bytecode is correct) and it will then immediately create a single block with that transaction (mine the block) . On the main Ethereum blockchain, several transactions will be added to any given block, but we can be less efficient on our local version. All clients like this one should have a specific set of api calls that can read or write to the blockchain. This is why all transactions are public to everyone in the network.
@@ -239,8 +242,8 @@ Anyone who knows the protocols that Ethereum layed out, can run the EVM, or conn
             -H "Content-Type: application/json" \
             -d '{"jsonrpc": "2.0", "method": "web3_clientVersion"}'
 
-    ![todo: add pic of curl]()
-    ![todo: add pic of ganache]()
+    ![missing pic](resources/ganache_cli_curl.png)
+    ![missing pic](resources/ganache_cli_log.png)
     As you can see, our client responds with a client version, which tells us which protocol to use. Don't worry, you probably won't have to deal with different protocol versions if you are reading this article. This is just a way to test that your client is running properly.
     
     These api calls (like `web3_clientVersion`) are part of Ethereum's protocols. Most clients will support the majority of these methods. For an explanation of these methods see the [JSON RPC docs](https://github.com/ethereum/wiki/wiki/JSON-RPC). 
@@ -293,7 +296,9 @@ Now that we have a blockchain client to store our transactions, lets deploy our 
     
     When we run this, truffle will first compile, and then run its migration steps using the development network. The development network simply points to our Ganache client.
     
-    ![todo: add pic]()
+    ![pic missing](resources/truffle_migrate_0.png)
+    ![pic missing](resources/truffle_migrate_1.png)
+    ![pic missing](resources/truffle_migrate_2.png)
     Ganache's output will contain a lot of good information about what was going on. You get back a list of all the API calls made to it, such as "eth_getBlockByNumber" or "eth_sendTransaction". When you send a transaction, it will display things like the transaction hash, gas usage, block number, and contract address (if the transaction created a contract).
     
 As you can see, the client is still running. You can now send transactions to localhost:8545 from browser Javascript libraries ([Web3js](https://web3js.readthedocs.io/en/1.0/)), Java libraries ([WEb3j](https://github.com/web3j/web3j)) or even curl ... although the syntax starts to become cumbersome.
@@ -322,7 +327,7 @@ So far, we have created a real working blockchain. However there are already a f
 
 Again, as long as you know the protocols (which are public domain), you can connect to these public networks with your own custom clients. However, this is a lot of work, and hipsters don't like working more than they have to. So we can either use Ethereum's open source Go client [Geth](https://github.com/ethereum/go-ethereum/wiki/geth) or we can be even lazier, and use a free hosted service called Infura.
 
-[Infura](https://infura.io) is a super easy way to connect to the public networks because you do not have to worry about running code on a server, or keeping it available. We are going to sign up for a free project. It will give us a few important things to work with. For this article, we will need the project id, and the endpoint url. ![todo: add pic?]() We will call this our Infura client because in the background, Infura is running a Geth client as a node in one of the public networks. [Infura's Getting Started Guide](https://blog.infura.io/getting-started-with-infura-28e41844cc89)
+[Infura](https://infura.io) is a super easy way to connect to the public networks because you do not have to worry about running code on a server, or keeping it available. We are going to sign up for a free project. It will give us a few important things to work with. For this article, we will need the project id, and the endpoint url. ![pic missing](resources/infura_console.png) We will call this our Infura client because in the background, Infura is running a Geth client as a node in one of the public networks. [Infura's Getting Started Guide](https://blog.infura.io/getting-started-with-infura-28e41844cc89)
 
 We also want to use public networks because we might want to call other contracts that may not exist on our local development network. For example, if you want to exchange Dai tokens (a stable coin), you have to test on Kovan because only Kovan and Mainnet have the Dai contract.
 
@@ -337,7 +342,7 @@ We also want to use public networks because we might want to call other contract
             -H "Content-Type: application/json" \
             -d '{"jsonrpc":"2.0","method":"web3_clientVersion","params": [],"id":1}'
 
-    ![todo: add pic]()
+    ![pic missing](resources/infura_curl.png)
     Awesome, looks like we hit our new Infura client
 
 ## Forking from Infura
@@ -354,7 +359,7 @@ Luckily, it is very easy to fork into Ganache. We just have to specify the Infur
             ...
             "scripts": {
                 ...
-                "start:kovan": "concurrently \"npm run ganache:kovan\" \"npm run migrate:kovan\"",
+                "start:kovan": "concurrently \"npm run ganache:kovan\" \"npm run migrate\"",
                 "start:rinkeby": "concurrently \"npm run ganache:rinkeby\" \"npm run migrate\"",
                 "start:ropsten": "concurrently \"npm run ganache:ropsten\" \"npm run migrate\"",
                 "ganache:kovan": "npm run ganache -- --fork \"https://kovan.infura.io/v3/$INFURA_PROJECT_ID\"",
@@ -429,7 +434,7 @@ Luckily, it is very easy to fork into Ganache. We just have to specify the Infur
 
 This command will start our local ganache (which forked from kovan), and then will migrate our contracts to it. Our local client will keep running, and we can view the contracts which have been successfully deployed.
 
-Run `node_modules/.bin/truffle networks`: ![todo add pic]()
+Run `node_modules/.bin/truffle networks`: ![pic missing](resources/truffle_networks.png)
 
 You can send function calls as transactions to this address on our local client. 
 
@@ -502,16 +507,19 @@ When working with contract code, you should always follow [best practices](https
 4. Optionally, update `.soliumignore` so that Ethlint will lint `Migrations.sol`
 
 5. Add Ethlint to your list of scripts. Then run the linter:
-
-        "lint:sol": "solium -d .",
-        "lint:sol:fix": "solium -d . --fix"
-    Ethlint will [fix some](https://github.com/duaraghav8/Ethlint/blob/master/lib/solium.js) mistakes
+        
+        {
+            "scripts": {
+                ...
+                "lint:sol": "solium -d ."
+            }
+        }
         
         npm run lint:sol
-    ![todo: add pic]()
+    ![pic missing](resources/solium_lint.png)
     
-    *Todo: explain pic*
-
+    As you can see, the `Migrations.sol` generated for us has some styling errors. You will have to come up with your own criteria linting.
+    
 # Testing
 
 The best part of the whole article, we finally get to write some tests.
@@ -548,7 +556,7 @@ Truffle comes with the command `truffle test` which will run all the unit tests,
                 }
             }
         }
-    This will give us more information during the testing, including gas usage for each function called. ![todo add pic]()
+    This will give us more information during the testing, including gas usage for each function called. ![todo take pic]()
 
 4. Now we can add our first test. Create the file `test/Deployment.test.js`:
 
@@ -594,19 +602,19 @@ Truffle comes with the command `truffle test` which will run all the unit tests,
             await migrations.setCompleted(expectedCompleted, { from: accounts[0] });
     
             assert.equal(expectedCompleted, await migrations.last_completed_migration({ from: accounts[0] }),
-                'setComplete did not update lastCompletedMigration');
+                'setComplete did not update last_completed_migration');
         });
     Here is a unit test that tests the happy path for the function `setCompleted`. Notice the use of async and await in these tests. Every time we call the contract, we must wait for our client to respond. 
 
 6. Run the tests
 
         npm run test
-    ![todo add pic]()
+    ![todo take pic]()
+    
+    Here, we don't see any listed methods in the table. This is because the only non-contract-creation transactions we tested was `last_completed_migration` which was a [*view*](https://solidity.readthedocs.io/en/v0.5.2/contracts.html#view-functions) function, which does not get picked up by Mocha.
     
     We will get back a lot of logs, and the more the better. First, we see ganache starting up and truffle migrating our contract. Next we start to see the tests getting run. Once the pass, we can see the gas usages generated by Mocha.
     
-    If we want, we can now test on the test networks, `npm run test:kovan` for example.
-
 # Wrap up
 
 Hopefully you have learned enough from this article to get started with your own smart contract projects. The languages and tools are constantly improving, and smart contract applications can start relying on tried and tested software development patterns. Don't forget to keep security in mind, and never take someone's word on the state of a contract. Trustless applications are intended to be verified, and bytecode is intended to be public. 
