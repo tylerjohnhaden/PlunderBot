@@ -106,21 +106,7 @@ Truffle init was responsible for creating three directories (`contracts/`, `migr
 
 ### Truffle comes with many useful commands, such as:
 
----
-- `build`
-- `compile`
-- `create`
-- `debug`
-- `exec`
-- `init`
-- `install`
-- `migrate`
-- `networks`
-- `opcode`
-- `publish`
-- `test`
-- `version`
----
+![todo add pic of truffle --help]()
 
   Check out the full list of [Truffle command line arguments](https://truffleframework.com/docs/truffle/reference/truffle-commands). We will only be using `init`, `compile`, `migrate`, and `test`.
 
@@ -157,19 +143,23 @@ The two most important parts are the "abi" and "bytecode"/"deployedBytecode".
 
 Remember when we said Solidity makes many breaking changes? It is standard to use the specific commit hash as the compiler version, i.e.
         
-        "compiler": {
-            "name": "solc",
-            "version": "0.5.0+commit.1d4f565a.Emscripten.clang"
+        {
+            ...
+            "compiler": {
+                "name": "solc",
+                "version": "0.5.0+commit.1d4f565a.Emscripten.clang"
+            },
+            ...
         }
     
   This becomes important when others want to prove that your source matches your bytecode. [Etherscan's verification tool](https://etherscan.io/verifyContract2) will allow users to interact with your public contract, but they will not let you upload your source by faith. They will try to compile your code, and the bytes must match exactly. 
 
-Truffle compile will search through your `contracts` directory, and compile any contracts, or libraries. If you have any import statements in those .sol files, truffle will attempt to find them. 
+Truffle compile will search through your `contracts/` directory, and compile any contracts, or libraries. If you have any import statements in those .sol files, truffle will attempt to find them. 
 
 There is also one config variable in `truffle-config.js` that will affect compilation. These are the solc defaults, but you can go ahead and add these to your config file.
 
         module.exports = {
-            networks: {},
+            ...
             solc: {
                 optimizer: {
                     enabled: true,
@@ -197,7 +187,7 @@ Definitions:
 - mnemonic: a list of 12 words that serve to generate your (private key, address) pair
 - network: a unique number that tells the client which chain to use. Think of each network as a separate blockchain that have all forked form Mainnet
 
-*todo: add link to better docs*
+[What is Ethereum?](http://www.ethdocs.org/en/latest/introduction/what-is-ethereum.html)
 
 As a smart contract *developer*, you don't really need to care about the exchange rate between [fiat](https://en.wikipedia.org/wiki/Fiat_money) and ether, or stock fluctuations. In fact, you can create your very own blockchain, where everything is free. The introduction of buying power is just necessary to ensure that the blockchain will live on, distributed across the world, with no grand organizer or power differential.
 
@@ -210,15 +200,18 @@ Anyone who knows the protocols that Ethereum layed out, can run the EVM, or conn
         npm install ganache-cli --save-dev
 
 2. To make our lives easier, lets add a script to our project to run our ganache. Add the following to `package.json`:
-
-        "scripts": {
-            "ganache": "ganache-cli --networkId $npm_package_config_ganache_networkId --allowUnlimitedContractSize --gasLimit $npm_package_config_ganache_gasLimit --gasPrice $npm_package_config_ganache_gasPrice --mnemonic \"$MNEMONIC\""
-        },
-        "config": {
-            "ganache": {
-                "networkId": 3431,
-                "gasPrice": 25000000000,
-                "gasLimit": 6500000
+        
+        {
+            ...
+            "scripts": {
+                "ganache": "ganache-cli --networkId $npm_package_config_ganache_networkId --allowUnlimitedContractSize --gasLimit $npm_package_config_ganache_gasLimit --gasPrice $npm_package_config_ganache_gasPrice --mnemonic \"$MNEMONIC\""
+            },
+            "config": {
+                "ganache": {
+                    "networkId": 3431,
+                    "gasPrice": 25000000000,
+                    "gasLimit": 6500000
+                }
             }
         }
     This lets us run the Ganache command line with a few config variables. `networkId` is arbitrary, as long as you are not using one of the public ids such as 1, 3, 4, or 42 (see a [test network disambiguation](https://ethereum.stackexchange.com/a/17101/46043)). You can update `gasPrice` or `gasLimit`, but for now lets leave these defaults.
@@ -246,7 +239,8 @@ Anyone who knows the protocols that Ethereum layed out, can run the EVM, or conn
             -H "Content-Type: application/json" \
             -d '{"jsonrpc": "2.0", "method": "web3_clientVersion"}'
 
-    ![todo: add pic]()
+    ![todo: add pic of curl]()
+    ![todo: add pic of ganache]()
     As you can see, our client responds with a client version, which tells us which protocol to use. Don't worry, you probably won't have to deal with different protocol versions if you are reading this article. This is just a way to test that your client is running properly.
 
 
@@ -270,14 +264,22 @@ Now that we have a blockchain client to store our transactions, lets deploy our 
                     gas: gasLimit,
                     gasPrice: gasPrice
                 }
-            }
+            },
+            ...
         }
     As you can see, we use the same configs that we used to run ganache. If we use arbitrary numbers, it will not necessarily fail, but these ensure all the numbers we see for gas usage are consistent.
     
 2. Let's add some more scripts to `package.json`:
-
-        "start": "concurrently \"npm run ganache\" \"npm run migrate\"",
-        "migrate": "rm -rf build && truffle migrate --reset --compile-all --network development"
+        
+        {
+            ...
+            "scripts": {
+                ...
+                "start": "concurrently \"npm run ganache\" \"npm run migrate\"",
+                "migrate": "rm -rf build && truffle migrate --reset --compile-all --network development"
+            },
+            ...
+        }
 
 3. We need to install [concurrently](https://www.npmjs.com/package/concurrently) so we can coordinate ganache and truffle together in the same command.
 
@@ -296,14 +298,18 @@ As you can see, the client is still running. You can now send transactions to lo
 
 If you deployed a contract, you could now send transactions that run specific functions on those contracts. You have to specify which address to send these to. In order to find out which address your contract was deployed on, you can either follow the Ganache logs, or look it up in `build/contracts/Migrations.sol`:
 
-          "networks": {
-              "3431": {
-                  "events": {},
-                  "links": {},
-                  "address": "0x2fAeC1D9fC41FC63976187cf912264a632BDc05D",
-                  "transactionHash": "0x4915f3413fc1b6b9e973d983de35f68d6874572b5d3093ea8ccae3eb618464f2"
-              }
-          },
+          {
+              ...
+              "networks": {
+                  "3431": {
+                      "events": {},
+                      "links": {},
+                      "address": "0x2fAeC1D9fC41FC63976187cf912264a632BDc05D",
+                      "transactionHash": "0x4915f3413fc1b6b9e973d983de35f68d6874572b5d3093ea8ccae3eb618464f2"
+                  }
+              },
+              ...
+          }
    Here, you can see the network is specified by a number, our local one we chose as 3431 (arbitrarily chosen). `transactionHash` is a unique identifier of that transaction. Anyone can look up that specific transaction based on it, and will be able to see all the events emitted, or other internal transactions that occurred during it. Even if it reverts because of some runtime error, it will still be present and forever recorded that you made a mistake!
    
    So now we need to specify the address `0x2fAeC1D9fC41FC63976187cf912264a632BDc05D` if we want to talk to the contract "Migrations". *todo: be more concrete*
@@ -342,13 +348,19 @@ Luckily, it is very easy to fork into Ganache. We just have to specify the Infur
 
 1. Lets add to our scripts in `package.json`
 
-        "start:kovan": "concurrently \"npm run ganache:kovan\" \"npm run migrate:kovan\"",
-        "start:rinkeby": "concurrently \"npm run ganache:rinkeby\" \"npm run migrate\"",
-        "start:ropsten": "concurrently \"npm run ganache:ropsten\" \"npm run migrate\"",
-        "ganache:kovan": "npm run ganache -- --fork \"https://kovan.infura.io/v3/$INFURA_PROJECT_ID\"",
-        "ganache:rinkeby": "npm run ganache -- --fork \"https://rinkeby.infura.io/v3/$INFURA_PROJECT_ID\"",
-        "ganache:ropsten": "npm run ganache -- --fork \"https://ropsten.infura.io/v3/$INFURA_PROJECT_ID\"",
-    If we were to run `truffle migrate --reset --compile-all --network kovan` for example, it would actually send the deployment transactions to the public networks. That is why for development and testing, will still migrate to the development network after forking. 
+        {
+            ...
+            "scripts": {
+                ...
+                "start:kovan": "concurrently \"npm run ganache:kovan\" \"npm run migrate:kovan\"",
+                "start:rinkeby": "concurrently \"npm run ganache:rinkeby\" \"npm run migrate\"",
+                "start:ropsten": "concurrently \"npm run ganache:ropsten\" \"npm run migrate\"",
+                "ganache:kovan": "npm run ganache -- --fork \"https://kovan.infura.io/v3/$INFURA_PROJECT_ID\"",
+                "ganache:rinkeby": "npm run ganache -- --fork \"https://rinkeby.infura.io/v3/$INFURA_PROJECT_ID\"",
+                "ganache:ropsten": "npm run ganache -- --fork \"https://ropsten.infura.io/v3/$INFURA_PROJECT_ID\""
+            },
+            ...
+        }
 
 2. We need to add to our `truffle-config.js` to point to these new networks:
 
@@ -367,36 +379,41 @@ Luckily, it is very easy to fork into Ganache. We just have to specify the Infur
             throw new Error('The environment variable "MNEMONIC" must be 12 words (space delineated)');
         }
         
+        ...
+        
         modules.export = {
+            networks: {
+                ...
+                kovan: {
+                    provider: () =>
+                        new HDWalletProvider(mnemonic, `https://kovan.infura.io/v3/${infuraProjectId}`),
+                    network_id: 42, // Kovan Id
+                    gas: 3000000,
+                    gasPrice: 100000000000
+                },
+                rinkeby: {
+                    provider: () =>
+                        new HDWalletProvider(mnemonic, `https://rinkeby.infura.io/v3/${infuraProjectId}`),
+                    network_id: 4, // Rinkeby Id
+                    gas: 3000000,
+                    gasPrice: 100000000000
+                },
+                ropsten: {
+                    provider: () =>
+                        new HDWalletProvider(mnemonic, `https://ropsten.infura.io/v3/${infuraProjectId}`),
+                    network_id: 3, // Ropsten Id
+                    gas: 3000000,
+                    gasPrice: 100000000000
+                },
+                live: {
+                    provider: () =>
+                        new HDWalletProvider(mnemonic, `https://mainnet.infura.io/v3/${infuraProjectId}`),
+                    network_id: 1, // Mainnet Id
+                    gas: 4000000,
+                    gasPrice: 100000000000
+                }
+            },
             ...
-            kovan: {
-                provider: () =>
-                    new HDWalletProvider(mnemonic, `https://kovan.infura.io/v3/${infuraProjectId}`),
-                network_id: 42, // Kovan Id
-                gas: 3000000,
-                gasPrice: 100000000000
-            },
-            rinkeby: {
-                provider: () =>
-                    new HDWalletProvider(mnemonic, `https://rinkeby.infura.io/v3/${infuraProjectId}`),
-                network_id: 4, // Rinkeby Id
-                gas: 3000000,
-                gasPrice: 100000000000
-            },
-            ropsten: {
-                provider: () =>
-                    new HDWalletProvider(mnemonic, `https://ropsten.infura.io/v3/${infuraProjectId}`),
-                network_id: 3, // Ropsten Id
-                gas: 3000000,
-                gasPrice: 100000000000
-            },
-            live: {
-                provider: () =>
-                    new HDWalletProvider(mnemonic, `https://mainnet.infura.io/v3/${infuraProjectId}`),
-                network_id: 1, // Mainnet Id
-                gas: 4000000,
-                gasPrice: 100000000000
-            }
         }
     We have to use the mnemonic here, because when we start sending transactions to the main networks, we have to use existing addresses with balances. 
     
@@ -505,16 +522,28 @@ Truffle comes with the command `truffle test` which will run all the unit tests,
 
 2. Add a script to `package.json`
 
-        "test": "concurrently \"npm run ganache\" \"npm run migrate && truffle test\" --kill-others --success first"
+        {
+            ...
+            "scripts": {
+                ...
+                "test": "concurrently \"npm run ganache\" \"npm run migrate && truffle test\" --kill-others --success first"
+            },
+            ...
+        }
     All this does is start a local Ganache client, migrate the current contracts, then run units/acceptance tests on that deployed code. `--kill-others --success first` just tells [Concurrently](https://www.npmjs.com/package/concurrently#usage) to stop running the Ganache client after the tests have finished.
     
 3. We can update `truffle-config.js` to use eth-gas-reporter in its mocha configuration
 
-        mocha: {
-            reporter: 'eth-gas-reporter',
-            reporterOptions : {
-                currency: 'USD',
-                gasPrice: 2
+        ...
+        
+        modules.export = { 
+            ...
+            mocha: {
+                reporter: 'eth-gas-reporter',
+                reporterOptions : {
+                    currency: 'USD',
+                    gasPrice: 2
+                }
             }
         }
     This will give us more information during the testing, including gas usage for each function called. ![todo add pic]()
