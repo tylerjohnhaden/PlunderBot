@@ -221,7 +221,7 @@ Anyone who knows the protocols that Ethereum layed out, can run the EVM, or conn
 
 3. Ganache will also take an optional mnemonic. This mnemonic serves to generate the private keys to be given starting balances of ether. Every Ethereum blockchain must start with some starting amount of ether, otherwise there is nothing to trade. Without a mnemonic, Ganache will randomly generate these private keys, but let's create one just so it is consistent between runs.
 
-        export MNEMONIC="genuine habit total coast ordinary violin empty mention muffin dream degree bunker"
+        export MNEMONIC="cause dry tilt taste hamster document hen over acoustic explain game distance"
     **Warning: This mnemonic should be secret!** You should treat this like a password. This is why we will always be using environment variables to inject into our scripts.
     
     You can randomly generate by running ganach-cli without one. For example `node_modules/.bin/ganache-cli | grep Mnemonic` will output the single line with it. Then you can just kill the process with ^C. ![pic missing](resources/ganache_cli_mnemonic.png)
