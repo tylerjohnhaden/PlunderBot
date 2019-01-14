@@ -176,16 +176,16 @@ The number of runs will affect the tradeoff between contract creation gas and su
 To understand how to run your smart contracts, you must first understand what a blockchain is. Unfortunately, this is not the place to have "the talk" with you. We will only discuss the bare minimum needed to develop and deploy your first contract.
 
 Definitions:
-- blockchain: a data structure that looks like a linked list
-- Ethereum: a set of protocols that are responsible for turning "transactions" into "blocks", an implementation of a blockchain
-- transaction: a list of bytes (just think "bits") that may contain bytecode, data, or anything technically (improperly formatted transactions just get reverted)
-- block: one of the linked nodes in the above stated "blockchain"
-- gas: some cash that is used to inventivize strangers to add your "transaction" to a "block"
-- ether: a mapping from "address" to a uint256
-- address: a number that is 20 bytes long
-- private key: a number that is 32 bytes long, every "private key" has exactly one "address" associated with it
-- mnemonic: a list of 12 words that serve to generate your (private key, address) pair
-- network: a unique number that tells the client which chain to use. Think of each network as a separate blockchain that have all forked form Mainnet
+- **blockchain**: a data structure that looks like a linked list
+- **Ethereum**: a set of protocols that are responsible for turning "transactions" into "blocks", an implementation of a blockchain
+- **transaction**: a list of bytes (just think "bits") that may contain bytecode, data, or anything technically (improperly formatted transactions just get reverted)
+- **block**: one of the linked nodes in the above stated "blockchain"
+- **gas**: some cash that is used to inventivize strangers to add your "transaction" to a "block"
+- **ether**: a mapping from "address" to a uint256
+- **address**: a number that is 20 bytes long
+- **private key**: a number that is 32 bytes long, every "private key" has exactly one "address" associated with it
+- **mnemonic**: a list of 12 words that serve to generate your (private key, address) pair
+- **network**: a unique number that tells the client which chain to use. Think of each network as a separate blockchain that have all forked form Mainnet
 
 [What is Ethereum?](http://www.ethdocs.org/en/latest/introduction/what-is-ethereum.html)
 
@@ -214,14 +214,14 @@ Anyone who knows the protocols that Ethereum layed out, can run the EVM, or conn
                 }
             }
         }
-    This lets us run the Ganache command line with a few config variables. `networkId` is arbitrary, as long as you are not using one of the public ids such as 1, 3, 4, or 42 (see a [test network disambiguation](https://ethereum.stackexchange.com/a/17101/46043)). You can update `gasPrice` or `gasLimit`, but for now lets leave these defaults.
+    This lets us run the Ganache command line with a few config variables. `networkId` is arbitrary, as long as you are not using one of the public ids such as 1, 3, 4, or 42 (see the [test network disambiguation](https://ethereum.stackexchange.com/a/17101/46043)). You can update `gasPrice` or `gasLimit`, but for now lets leave these defaults.
 
-3. Ganache will also take an optional mnemonic. This mnemonic serves to generate the private keys to be given starting balances of ether. Every Ethereum blockchain must start with some starting amount, otherwise there is nothing to trade. Without a mnemonic, Ganache will randomly generate these private keys, but let's create one just so it is consistent between runs.
+3. Ganache will also take an optional mnemonic. This mnemonic serves to generate the private keys to be given starting balances of ether. Every Ethereum blockchain must start with some starting amount of ether, otherwise there is nothing to trade. Without a mnemonic, Ganache will randomly generate these private keys, but let's create one just so it is consistent between runs.
 
         export MNEMONIC="genuine habit total coast ordinary violin empty mention muffin dream degree bunker"
     **Warning: This mnemonic should be secret!** You should treat this like a password. This is why we will always be using environment variables to inject into our scripts.
     
-    You can randomly generate by running ganach-cli without one. For example `node_modules/.bin/ganache-cli | grep Mnemonic` will output the single line with it. Then you can just kill the process with ctrl-C. ![todo: add image]()
+    You can randomly generate by running ganach-cli without one. For example `node_modules/.bin/ganache-cli | grep Mnemonic` will output the single line with it. Then you can just kill the process with ^C. ![todo: add image]()
 
 4. Run Ganache and see what is generated
 
@@ -242,6 +242,8 @@ Anyone who knows the protocols that Ethereum layed out, can run the EVM, or conn
     ![todo: add pic of curl]()
     ![todo: add pic of ganache]()
     As you can see, our client responds with a client version, which tells us which protocol to use. Don't worry, you probably won't have to deal with different protocol versions if you are reading this article. This is just a way to test that your client is running properly.
+    
+    These api calls (like `web3_clientVersion`) are part of Ethereum's protocols. Most clients will support the majority of these methods. For an explanation of these methods see the [JSON RPC docs](https://github.com/ethereum/wiki/wiki/JSON-RPC). 
 
 
 ## Deploy to your local blockchain
@@ -532,7 +534,7 @@ Truffle comes with the command `truffle test` which will run all the unit tests,
         }
     All this does is start a local Ganache client, migrate the current contracts, then run units/acceptance tests on that deployed code. `--kill-others --success first` just tells [Concurrently](https://www.npmjs.com/package/concurrently#usage) to stop running the Ganache client after the tests have finished.
     
-3. We can update `truffle-config.js` to use eth-gas-reporter in its mocha configuration
+3. We can update `truffle-config.js` to use eth-gas-reporter in its [Mocha](https://mochajs.org/) configuration
 
         ...
         
@@ -591,14 +593,23 @@ Truffle comes with the command `truffle test` which will run all the unit tests,
     
             await migrations.setCompleted(expectedCompleted, { from: accounts[0] });
     
-            assert.equal(expectedCompleted, await migrations.lastCompletedMigration({ from: accounts[0] }),
+            assert.equal(expectedCompleted, await migrations.last_completed_migration({ from: accounts[0] }),
                 'setComplete did not update lastCompletedMigration');
         });
     Here is a unit test that tests the happy path for the function `setCompleted`. Notice the use of async and await in these tests. Every time we call the contract, we must wait for our client to respond. 
 
+6. Run the tests
+
+        npm run test
+    ![todo add pic]()
+    
+    We will get back a lot of logs, and the more the better. First, we see ganache starting up and truffle migrating our contract. Next we start to see the tests getting run. Once the pass, we can see the gas usages generated by Mocha.
+    
+    If we want, we can now test on the test networks, `npm run test:kovan` for example.
 
 # Wrap up
 
-Hopefully you have learned enough from this article to get started with your own smart contract projects. *todo: make better conclusion*
+Hopefully you have learned enough from this article to get started with your own smart contract projects. The languages and tools are constantly improving, and smart contract applications can start relying on tried and tested software development patterns. Don't forget to keep security in mind, and never take someone's word on the state of a contract. Trustless applications are intended to be verified, and bytecode is intended to be public. 
 
-*todo: call to action*
+To see the latest version of our boilerplate code, submit issues, or contribute, check out our public [repository](https://github.com/tylerjohnhaden/__truffle-boilerplate).
+
