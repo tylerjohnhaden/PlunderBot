@@ -12,22 +12,24 @@ image:
 
 An introduction on how to get started with a Truffle-based Solidity project. This article series will not only explain how to get started with [Truffle](https://truffleframework.com/docs/truffle/overview) as an Ethereum smart contract framework, but will also describe boilerplate code that will make your life a ton easier (think linting, local blockchain clients, and improved testing). The goal will to be as transparent as possible about all the tools and configurations that are used, because it usually takes a while to start really getting the whole blockchain thing.
 
-*todo: explain __truffle-boilerplate repo*
+If you would like to explore the source code as a simple boilerplate project, checkout the [github](https://github.com/tylerjohnhaden/__truffle-boilerplate)(blog written as of [commit 0x435f745](https://github.com/tylerjohnhaden/__truffle-boilerplate/tree/435f745a21edfbff6904153b81d65e2d1ee1a6a6)). 
 
 ### Assumptions
 This tutorial will assume that you have experience with basic bash, node, and npm. 
 
+All of the dependencies we need should be OS agnostic, however if you may need to change the commands to suite your specific shell/OS.
+
 ### Dependencies
 - node, npm
 
-  We will be installing all our necessary node modules into the local project. You may also install globally, however you may want to keep it local, is because these tools and languages change very fast compared to most other development environments. For example, the Solidity compiler makes backwards compatibility breaking changes very often. *TODO: cite this*
+  We will be installing all of our necessary node modules into the local project. You may also install globally, however you may want to keep it local, because these languages and tools change very fast compared to most tech stacks. You can track the next [ethereum/solidity updates](https://github.com/ethereum/solidity/projects) are scheduled.
 
 # Truffle Initialization
 1. Create a new directory to contain your truffle project.
 
         mkdir MyFirstTruffleProject && cd MyFirstTruffleProject
 
-2. Initialize your project with package.json file. You can use other versions of node, but we recommend you use the latest. This article is written with the versions specified below.
+2. Initialize your project with `package.json` file. You can use other versions of node, but we recommend you use the latest. This article is written with the versions specified below.
         
         {
           "name": "my-first-truffle-project",
@@ -102,9 +104,27 @@ Truffle init was responsible for creating three directories (`contracts/`, `migr
 
 ## Compiling your contracts
 
-*todo: explain and link truffle's cli arguments*
+### Truffle comes with many useful commands, such as:
 
-Let us see if we can compile the single contract that was generated for us. It is very easy to run truffle commands for now, but we will eventually build up the script library in our package.json.
+---
+- `build`
+- `compile`
+- `create`
+- `debug`
+- `exec`
+- `init`
+- `install`
+- `migrate`
+- `networks`
+- `opcode`
+- `publish`
+- `test`
+- `version`
+---
+
+  Check out the full list of [Truffle command line arguments](https://truffleframework.com/docs/truffle/reference/truffle-commands). We will only be using `init`, `compile`, `migrate`, and `test`.
+
+Let us see if we can compile the single contract that was generated for us. It is very easy to run truffle commands for now, but we will eventually build up the script library in our `package.json`.
 
         node_modules/.bin/truffle compile
 
@@ -142,7 +162,7 @@ Remember when we said Solidity makes many breaking changes? It is standard to us
             "version": "0.5.0+commit.1d4f565a.Emscripten.clang"
         }
     
-  This become important when others want to prove that your source matches your bytecode. [Etherscan's verification tool](https://etherscan.io/verifyContract2) will allow users to interact with your public contract, but they will not let you upload your source by faith. The nature of the blockchain behooves them to prove to their users that this address contains this source code.
+  This becomes important when others want to prove that your source matches your bytecode. [Etherscan's verification tool](https://etherscan.io/verifyContract2) will allow users to interact with your public contract, but they will not let you upload your source by faith. They will try to compile your code, and the bytes must match exactly. 
 
 Truffle compile will search through your `contracts` directory, and compile any contracts, or libraries. If you have any import statements in those .sol files, truffle will attempt to find them. 
 
@@ -168,7 +188,7 @@ To understand how to run your smart contracts, you must first understand what a 
 Definitions:
 - blockchain: a data structure that looks like a linked list
 - Ethereum: a set of protocols that are responsible for turning "transactions" into "blocks", an implementation of a blockchain
-- transaction: a list of bytes (just think "bits") that may contain bytecode, data, or anything technically (improperly formatted transactions just get reverted) *todo: cite this*
+- transaction: a list of bytes (just think "bits") that may contain bytecode, data, or anything technically (improperly formatted transactions just get reverted)
 - block: one of the linked nodes in the above stated "blockchain"
 - gas: some cash that is used to inventivize strangers to add your "transaction" to a "block"
 - ether: a mapping from "address" to a uint256
@@ -189,7 +209,7 @@ Anyone who knows the protocols that Ethereum layed out, can run the EVM, or conn
 
         npm install ganache-cli --save-dev
 
-2. To make our lives easier, lets add a script to our project to run our ganache. Add the following to package.json:
+2. To make our lives easier, lets add a script to our project to run our ganache. Add the following to `package.json`:
 
         "scripts": {
             "ganache": "ganache-cli --networkId $npm_package_config_ganache_networkId --allowUnlimitedContractSize --gasLimit $npm_package_config_ganache_gasLimit --gasPrice $npm_package_config_ganache_gasPrice --mnemonic \"$MNEMONIC\""
@@ -217,7 +237,7 @@ Anyone who knows the protocols that Ethereum layed out, can run the EVM, or conn
     ![todo: add pic]()
     Ganache will generate accounts based on what parameters you run it with. The default is 10 with starting balances of 100 Ether. The cli will display the addresses, private keys, mnemonic, gas price, and gas limit. These addresses can technically be used on any Ethereum blockchain, not just you local one (but they probably have 0 real Ether).
     
-    This Ganache client will sit around, waiting for someone to send it a transaction on port 8545 by default. When it receives that transaction, it will attempt to run it on the EVM (see if the bytecode is correct) and it will then immediately create a single block with that transaction (mine the block) *todo: cite this*. On the main Ethereum blockchain, several transactions will be added to any given block, but we can be less efficient on our local version. All clients like this one should have a specific set of api calls that can read or write to the blockchain. This is why all transactions are public to everyone in the network.
+    This Ganache client will sit around, waiting for someone to send it a transaction on port 8545 by default. When it receives that transaction, it will attempt to run it on the EVM (see if the bytecode is correct) and it will then immediately create a single block with that transaction (mine the block) . On the main Ethereum blockchain, several transactions will be added to any given block, but we can be less efficient on our local version. All clients like this one should have a specific set of api calls that can read or write to the blockchain. This is why all transactions are public to everyone in the network.
     
 5. Test the Ganache client by sending an api call from another terminal
 
@@ -252,7 +272,7 @@ Now that we have a blockchain client to store our transactions, lets deploy our 
                 }
             }
         }
-    As you can see, we use the same configs that we used to run ganache. If we use arbitrary numbers, it will not necessarily fail, but these ensure all the numbers we see for gas usage are consistent. *todo: cite this*
+    As you can see, we use the same configs that we used to run ganache. If we use arbitrary numbers, it will not necessarily fail, but these ensure all the numbers we see for gas usage are consistent.
     
 2. Let's add some more scripts to `package.json`:
 
@@ -294,7 +314,7 @@ So far, we have created a real working blockchain. However there are already a f
 
 Again, as long as you know the protocols (which are public domain), you can connect to these public networks with your own custom clients. However, this is a lot of work, and hipsters don't like working more than they have to. So we can either use Ethereum's open source Go client [Geth](https://github.com/ethereum/go-ethereum/wiki/geth) or we can be even lazier, and use a free hosted service called Infura.
 
-[Infura](https://infura.io) is a super easy way to connect to the public networks because you do not have to worry about running code on a server, or keeping it available. We are going to sign up for a free project. It will give us a few important things to work with. For this article, we will need the project id, and the endpoint url. ![todo: add pic?]() We will call this our Infura client because in the background, Infura is running a Geth client as a node in one of the public networks. *todo: link to other instructions*
+[Infura](https://infura.io) is a super easy way to connect to the public networks because you do not have to worry about running code on a server, or keeping it available. We are going to sign up for a free project. It will give us a few important things to work with. For this article, we will need the project id, and the endpoint url. ![todo: add pic?]() We will call this our Infura client because in the background, Infura is running a Geth client as a node in one of the public networks. [Infura's Getting Started Guide](https://blog.infura.io/getting-started-with-infura-28e41844cc89)
 
 We also want to use public networks because we might want to call other contracts that may not exist on our local development network. For example, if you want to exchange Dai tokens (a stable coin), you have to test on Kovan because only Kovan and Mainnet have the Dai contract.
 
@@ -314,7 +334,7 @@ We also want to use public networks because we might want to call other contract
 
 ## Forking from Infura
 
-You can use this new client to do essentially everything we just did on our Ganache client *todo: cite from infura docs*. However, if you want to write transactions to these public blockchains, it will cost Ether. Even on the test networks, you still have to *todo: link to basic faucet instructions* acquire Ether. Also, all of these public transactions are persisted across the world. For development, we still want to spin up a local ganache client to keep our code base relatively private, and so we are not incurring unnecessary costs.
+You can use this new client to do essentially everything we just did on our Ganache client, see Infura's [api docs](https://infura.io/docs). However, if you want to write transactions to these public blockchains, it will cost Ether. Even on the test networks, you still have to acquire Ether. Follow [these links](https://www.google.com/search?q=ethereum+test+faucets) to lean more about *faucets*. Also, all of these public transactions are persisted across the world. For development, we still want to spin up a local ganache client to keep our code base relatively private, and so we are not incurring unnecessary costs.
 
 We can leverage our Infura client by forking it into our local Ganache. Forking is a very literal term in the sense that we are taking the "linked list" that makes up the public blockchain, and then adding our own transactions onto the end of it. We do not care about public transactions "post fork" because our linked list continues off from the other (never linking back up again) *todo: add diagram*. If we reference a contact that was created before the fork, our local ganache will simply search our Infura client for that particular code. It will never change, even if other people interact with the same contract on a different blockchain.
 
@@ -388,7 +408,11 @@ Luckily, it is very easy to fork into Ganache. We just have to specify the Infur
         
         npm run start:kovan
 
-Not a lot will change, but now you can call previously deployed contracts from within your contracts. *todo: be more concrete*
+This command will start our local ganache (which forked from kovan), and then will migrate our contracts to it. Our local client will keep running, and we can view the contracts which have been successfully deployed.
+
+Run `node_modules/.bin/truffle networks`: ![todo add pic]()
+
+You can send function calls as transactions to this address on our local client. 
 
 # Adding linting to your project
 
@@ -473,7 +497,7 @@ When working with contract code, you should always follow [best practices](https
 
 The best part of the whole article, we finally get to write some tests.
 
-Truffle comes with the command `truffle test` which will run all the unit tests, or specific ones if you specify them *todo: cite this*. First, we will add some scripts to abstract away the running of our local blockchain in conjunction with running the tests.
+Truffle comes with the command `truffle test` which will run all the unit tests, or specific ones if you specify them, [see docs](https://truffleframework.com/docs/truffle/testing/testing-your-contracts#command). First, we will add some scripts to abstract away the running of our local blockchain in conjunction with running the tests.
 
 1. Install two cool modules to help us run the unit and acceptance tests:
 
@@ -482,7 +506,7 @@ Truffle comes with the command `truffle test` which will run all the unit tests,
 2. Add a script to `package.json`
 
         "test": "concurrently \"npm run ganache\" \"npm run migrate && truffle test\" --kill-others --success first"
-    All this does is start a local Ganache client, migrate the current contracts, then run units/acceptance tests on that deployed code. `--kill-others --success first` just tells Concurrently to stop running the Ganache client after the tests have finished. *todo: cite thi*
+    All this does is start a local Ganache client, migrate the current contracts, then run units/acceptance tests on that deployed code. `--kill-others --success first` just tells [Concurrently](https://www.npmjs.com/package/concurrently#usage) to stop running the Ganache client after the tests have finished.
     
 3. We can update `truffle-config.js` to use eth-gas-reporter in its mocha configuration
 
@@ -493,7 +517,7 @@ Truffle comes with the command `truffle test` which will run all the unit tests,
                 gasPrice: 2
             }
         }
-    This will give us more information during the testing, including gas usage for each function called. *todo: add pic or example*
+    This will give us more information during the testing, including gas usage for each function called. ![todo add pic]()
 
 4. Now we can add our first test. Create the file `test/Deployment.test.js`:
 
