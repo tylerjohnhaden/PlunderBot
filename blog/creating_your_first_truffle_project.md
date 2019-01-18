@@ -295,11 +295,17 @@ Now that we have a blockchain client to store our transactions, lets deploy our 
 
         npm run start
     
-    When we run this, truffle will first compile, and then run its migration steps using the development network. The development network simply points to our Ganache client.
+    When we run this, truffle will first compile, and then run its migration steps using the development network (ganache). 
     
     ![pic missing](resources/truffle_migrate_0.png)
+    Above shows the beginning of the stdout after `npm run start`. You can see the "Migrations" contract being deployed in a transaction.
+    
     ![pic missing](resources/truffle_migrate_1.png)
+    Truffle will request the address's balance during this process, and it will display similar to the above image. The only Ether removed was the gas needed for deployment. 
+    
     ![pic missing](resources/truffle_migrate_2.png)
+    Here we see the summary. The final cost is how much gas was spent to send the contract creation transactions. You can use this value to see how much a brand new contract would cost. If this particular deployment was on Mainnet, it would have cost 1 dollar (0.008 Eth per Dollar on 2019-1-18).
+    
     Ganache's output will contain a lot of good information about what was going on. You get back a list of all the API calls made to it, such as "eth_getBlockByNumber" or "eth_sendTransaction". When you send a transaction, it will display things like the transaction hash, gas usage, block number, and contract address (if the transaction created a contract).
     
 As you can see, the client is still running. You can now send transactions to localhost:8545 from browser Javascript libraries ([Web3js](https://web3js.readthedocs.io/en/1.0/)), Java libraries ([Web3j](https://github.com/web3j/web3j)) or even curl ... although the syntax starts to become cumbersome.
