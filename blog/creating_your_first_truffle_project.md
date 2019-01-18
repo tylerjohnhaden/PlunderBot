@@ -10,7 +10,7 @@ title: Creating your First Truffle Project
 image: 
 ---
 
-An introduction on how to get started with a Truffle-based Solidity project. This article series will not only explain how to get started with [Truffle](https://truffleframework.com/docs/truffle/overview) as an Ethereum smart contract framework, but will also describe boilerplate code that will make your life a ton easier (think linting, local blockchain clients, and improved testing). The goal will to be as transparent as possible about all the tools and configurations that are used, because it usually takes a while to start really getting the whole blockchain thing.
+An introduction on how to get started with a Truffle-based Solidity project. This article series will both explain how to get started with [Truffle](https://truffleframework.com/docs/truffle/overview) as an Ethereum smart contract framework, and will also describe boilerplate code that will make your life a lot easier (think linting, local blockchain clients, and improved testing).
 
 If you would like to explore the source code as a simple boilerplate project, checkout the [github](https://github.com/tylerjohnhaden/__truffle-boilerplate)(blog written as of [commit 0x435f745](https://github.com/tylerjohnhaden/__truffle-boilerplate/tree/435f745a21edfbff6904153b81d65e2d1ee1a6a6)). 
 
@@ -23,21 +23,20 @@ All of the dependencies we need should be OS agnostic, however if you may need t
 ### Dependencies
 - node, npm
 
-  We will be installing all of our necessary node modules into the local project. You may also install globally, however you may want to keep it local, because these languages and tools change very fast compared to most tech stacks. You can track the next [ethereum/solidity updates](https://github.com/ethereum/solidity/projects) are scheduled.
+  We will be installing all of our necessary node modules into the local project. You may also install globally, however you may want to keep these local because these languages and tools change pretty fast compared to most tech stacks. You can track the next [ethereum/solidity updates](https://github.com/ethereum/solidity/projects)(including breaking changes) are scheduled.
 
 # Truffle Initialization
 1. Create a new directory to contain your truffle project.
 
         mkdir MyFirstTruffleProject && cd MyFirstTruffleProject
 
-2. Initialize your project with `package.json` file. You can use other versions of node, but we recommend you use the latest. This article is written with the versions specified below.
+2. Initialize your project with `package.json` file. You can use other versions of node, but we recommend you use the latest. This article is written with Node version **11.6**
         
         {
           "name": "my-first-truffle-project",
           "version": "0.0.1",
           "engines": {
-            "node": "11.6.x",
-            "npm": "6.5.x"
+            "node": "11.6.x"
           }
         }
 
@@ -141,7 +140,7 @@ Truffle will create `build/contracts/Migrations.json`. This json file contains a
             ...
         }
 The two most important parts are the "abi" and "bytecode"/"deployedBytecode". 
-- Ethereum has specified a common way of interacting with contracts using the [Application Binary Interface](https://solidity.readthedocs.io/en/develop/abi-spec.html) (ABI). It is what tells clients how to create transactions that will run on the contract, and what events you should expect. There is more in-depth information in the documentation, and we highly recommend reading it if you plan on developing smart contracts with Solidity.
+- Ethereum has specified a common way of interacting with contracts using the [Application Binary Interface](https://solidity.readthedocs.io/en/develop/abi-spec.html) (ABI). It is what tells clients how to create transactions that will run on the contract, and what events you should expect. The ABI specification is enough information for another blog article, and it is filled with useful information about how to interact with contracts on the EVM, you should really check it out!
 - The bytecode is what gets run on the [Ethereum Virtual Machine](https://solidity.readthedocs.io/en/v0.5.2/introduction-to-smart-contracts.html#index-6) (EVM). In order for you to "deploy" a contract onto the Ethereum blockchain, you must submit the deployedBytecode as a transaction. Technically, the bytecode is what is stored as the contract, and when you call a function, it can only interact with that bytecode in the EVM.
 
 Remember when we said Solidity makes many breaking changes? It is standard to use the specific commit hash as the compiler version, i.e.
@@ -225,7 +224,7 @@ Anyone who knows the protocols that Ethereum layed out, can run the EVM, or conn
         export MNEMONIC="cause dry tilt taste hamster document hen over acoustic explain game distance"
     **Warning: This mnemonic should be secret!** You should treat this like a password. This is why we will always be using environment variables to inject into our scripts.
     
-    You can randomly generate by running ganach-cli without one. For example `node_modules/.bin/ganache-cli | grep Mnemonic` will output the single line with it. Then you can just kill the process with ^C. ![pic missing](resources/ganache_cli_mnemonic.png)
+    You can randomly generate a new mnemonic by running ganache-cli without specifying one. For example `node_modules/.bin/ganache-cli | grep Mnemonic` will output the single line with it. Then you can just kill the process with ^C. ![pic missing](resources/ganache_cli_mnemonic.png)
 
 4. Run Ganache and see what is generated
 
@@ -244,6 +243,8 @@ Anyone who knows the protocols that Ethereum layed out, can run the EVM, or conn
             -d '{"jsonrpc": "2.0", "method": "web3_clientVersion"}'
 
     ![missing pic](resources/ganache_cli_curl.png)
+    
+    When we go back the the terminal with ganache running, we can see it logged the api call **web3_clientVersion**.
     ![missing pic](resources/ganache_cli_log.png)
     As you can see, our client responds with a client version, which tells us which protocol to use. Don't worry, you probably won't have to deal with different protocol versions if you are reading this article. This is just a way to test that your client is running properly.
     
